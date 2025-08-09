@@ -88,9 +88,14 @@ function HoleScoring({ currentHole, matchups, onRecordResults, players }) {
               <div 
                 className="progress-fill" 
                 style={{ width: `${(currentHole / 18) * 100}%` }}
-              ></div>
+              >
+                <img 
+                  src="./flag.png" 
+                  alt="Progress marker" 
+                  className="progress-flag"
+                />
+              </div>
             </div>
-            <span className="progress-text">{currentHole} of 18</span>
           </div>
         </div>
 

@@ -289,7 +289,7 @@
 }
 
 .hole-title {
-  color: var(--color-primary);
+  color: var(--color-secondary);
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: var(--spacing-md);
@@ -308,13 +308,24 @@
   height: 8px;
   background-color: var(--color-border);
   border-radius: 4px;
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
 }
 
 .progress-fill {
   height: 100%;
   background-color: var(--color-success);
   transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-flag {
+  position: absolute;
+  right: -11px;
+  width: 30px;
+  transform: translate(8px, -50%);
+  object-fit: contain;
+  z-index: 10;
 }
 
 .progress-text {
@@ -574,7 +585,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  min-width: 0; /* Allows flex/grid items to shrink below content size */
+  min-width: 0;
+  /* Allows flex/grid items to shrink below content size */
 }
 
 .cell-thru {
@@ -675,21 +687,22 @@
 
 /* Mobile optimizations for PointsTable */
 @media (max-width: 480px) {
+
   .points-table-header,
   .points-table-row {
     grid-template-columns: 2fr 0.8fr 1fr 0.8fr 0.8fr 0.8fr;
     padding: var(--spacing-xs);
     font-size: 0.875rem;
   }
-  
+
   .points-table-header {
     font-size: 0.75rem;
   }
-  
+
   .cell-player {
     font-size: 0.9rem;
   }
-  
+
   .cell-points {
     font-size: 1rem;
   }
@@ -700,39 +713,39 @@
   .screen {
     padding: var(--spacing-lg);
   }
-  
+
   .matchup-controls {
     grid-template-columns: 1fr 1fr 1fr;
     gap: var(--spacing-md);
   }
-  
+
   .matchup-button {
     min-height: 56px;
     font-size: 1.25rem;
   }
-  
+
   .button-group {
     gap: var(--spacing-md);
   }
-  
+
   .match-setup-form .form-input {
     font-size: 1.25rem;
     min-height: 52px;
   }
-  
+
   .start-match-button {
     font-size: 1.25rem;
     min-height: 56px;
   }
-  
+
   .hole-title {
     font-size: 2.5rem;
   }
-  
+
   .matchup-player {
     font-size: 1.5rem;
   }
-  
+
   .standings-header,
   .standings-row {
     padding: var(--spacing-md);
