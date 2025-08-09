@@ -75,23 +75,7 @@ describe('MatchSetup Component', () => {
     expect(mockOnStartMatch).not.toHaveBeenCalled();
   });
 
-  it('shows validation error when player names are too short', async () => {
-    render(<MatchSetup onStartMatch={mockOnStartMatch} />);
-    
-    // Fill in names with one being too short
-    fireEvent.change(screen.getByLabelText('Player 1'), { target: { value: 'A' } });
-    fireEvent.change(screen.getByLabelText('Player 2'), { target: { value: 'Bob' } });
-    fireEvent.change(screen.getByLabelText('Player 3'), { target: { value: 'Charlie' } });
-    fireEvent.change(screen.getByLabelText('Player 4'), { target: { value: 'David' } });
-    
-    fireEvent.click(screen.getByRole('button', { name: 'Start Match' }));
-    
-    await waitFor(() => {
-      expect(screen.getByText('Player names must be at least 2 characters long')).toBeInTheDocument();
-    });
-    
-    expect(mockOnStartMatch).not.toHaveBeenCalled();
-  });
+
 
   it('calls onStartMatch with trimmed player names when form is valid', async () => {
     render(<MatchSetup onStartMatch={mockOnStartMatch} />);

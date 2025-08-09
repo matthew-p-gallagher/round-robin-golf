@@ -48,11 +48,7 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResume }) {
       validationErrors.push('All player names must be unique');
     }
     
-    // Check for names that are too short (less than 2 characters)
-    const shortNames = playerNames.some(name => name.trim().length < 2);
-    if (shortNames) {
-      validationErrors.push('Player names must be at least 2 characters long');
-    }
+
     
     return validationErrors;
   };
