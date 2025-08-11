@@ -10,6 +10,7 @@ import { useState } from 'react';
 function MatchSetup({ onStartMatch, onResumeMatch, canResume }) {
   const [playerNames, setPlayerNames] = useState(['', '', '', '']);
   const [errors, setErrors] = useState([]);
+  const [duplicateIndices, setDuplicateIndices] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   /**
@@ -25,6 +26,7 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResume }) {
     // Clear errors when user starts typing
     if (errors.length > 0) {
       setErrors([]);
+      setDuplicateIndices([]);
     }
   };
 
@@ -34,6 +36,7 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResume }) {
    */
   const validatePlayerNames = () => {
     const validationErrors = [];
+    const duplicates = [];
     
     // Check for empty names
     const emptyNames = playerNames.some(name => !name.trim());
@@ -41,14 +44,33 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResume }) {
       validationErrors.push('All player names must be filled in');
     }
     
-    // Check for duplicate names
+    // Check for duplicate names and track which indices have duplicates
     const trimmedNames = playerNames.map(name => name.trim().toLowerCase());
-    const uniqueNames = new Set(trimmedNames);
-    if (uniqueNames.size !== 4) {
-      validationErrors.push('All player names must be unique');
-    }
+    const nameMap = new Map();
     
-
+    // Build a map of names to their indices
+    trimmedNames.forEach((name, index) => {
+      if (name) { // Only check non-empty names
+        if (!nameMap.has(name)) {
+          nameMap.set(name, []);
+        }
+        nameMap.get(name).push(index);
+      }
+    });
+    
+    // Find all indices that have duplicate names
+    nameMap.forEach((indices) => {
+      if (indices.length > 1) {
+        duplicates.push(...indices);
+      }
+    });
+    
+    if (duplicates.length > 0) {
+      validationErrors.push('All player names must be unique');
+      setDuplicateIndices(duplicates);
+    } else {
+      setDuplicateIndices([]);
+    }
     
     return validationErrors;
   };
@@ -85,6 +107,7 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResume }) {
   const handleClear = () => {
     setPlayerNames(['', '', '', '']);
     setErrors([]);
+    setDuplicateIndices([]);
   };
 
   /**
@@ -134,7 +157,7 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResume }) {
                   type="text"
                   value={name}
                   onChange={(e) => handlePlayerNameChange(index, e.target.value)}
-                  className="form-input"
+                  className={`form-input ${duplicateIndices.includes(index) ? 'form-input-error' : ''}`}
                   placeholder={`Enter player ${index + 1} name`}
                   maxLength={30}
                   disabled={isSubmitting}

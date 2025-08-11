@@ -75,6 +75,95 @@ describe('MatchSetup Component', () => {
     expect(mockOnStartMatch).not.toHaveBeenCalled();
   });
 
+  it('highlights duplicate input fields with error styling', async () => {
+    render(<MatchSetup onStartMatch={mockOnStartMatch} />);
+    
+    // Fill in duplicate names
+    fireEvent.change(screen.getByLabelText('Player 1'), { target: { value: 'Alice' } });
+    fireEvent.change(screen.getByLabelText('Player 2'), { target: { value: 'Alice' } });
+    fireEvent.change(screen.getByLabelText('Player 3'), { target: { value: 'Bob' } });
+    fireEvent.change(screen.getByLabelText('Player 4'), { target: { value: 'Charlie' } });
+    
+    fireEvent.click(screen.getByRole('button', { name: 'Start Match' }));
+    
+    await waitFor(() => {
+      expect(screen.getByText('All player names must be unique')).toBeInTheDocument();
+    });
+    
+    // Check that duplicate fields have error styling
+    const player1Input = screen.getByLabelText('Player 1');
+    const player2Input = screen.getByLabelText('Player 2');
+    const player3Input = screen.getByLabelText('Player 3');
+    const player4Input = screen.getByLabelText('Player 4');
+    
+    expect(player1Input).toHaveClass('form-input-error');
+    expect(player2Input).toHaveClass('form-input-error');
+    expect(player3Input).not.toHaveClass('form-input-error');
+    expect(player4Input).not.toHaveClass('form-input-error');
+    
+    expect(mockOnStartMatch).not.toHaveBeenCalled();
+  });
+
+  it('highlights multiple sets of duplicate input fields', async () => {
+    render(<MatchSetup onStartMatch={mockOnStartMatch} />);
+    
+    // Fill in two sets of duplicate names
+    fireEvent.change(screen.getByLabelText('Player 1'), { target: { value: 'Alice' } });
+    fireEvent.change(screen.getByLabelText('Player 2'), { target: { value: 'Bob' } });
+    fireEvent.change(screen.getByLabelText('Player 3'), { target: { value: 'Alice' } });
+    fireEvent.change(screen.getByLabelText('Player 4'), { target: { value: 'Bob' } });
+    
+    fireEvent.click(screen.getByRole('button', { name: 'Start Match' }));
+    
+    await waitFor(() => {
+      expect(screen.getByText('All player names must be unique')).toBeInTheDocument();
+    });
+    
+    // Check that all duplicate fields have error styling
+    const player1Input = screen.getByLabelText('Player 1');
+    const player2Input = screen.getByLabelText('Player 2');
+    const player3Input = screen.getByLabelText('Player 3');
+    const player4Input = screen.getByLabelText('Player 4');
+    
+    expect(player1Input).toHaveClass('form-input-error');
+    expect(player2Input).toHaveClass('form-input-error');
+    expect(player3Input).toHaveClass('form-input-error');
+    expect(player4Input).toHaveClass('form-input-error');
+    
+    expect(mockOnStartMatch).not.toHaveBeenCalled();
+  });
+
+  it('clears error styling when user starts typing after validation error', async () => {
+    render(<MatchSetup onStartMatch={mockOnStartMatch} />);
+    
+    // Fill in duplicate names
+    fireEvent.change(screen.getByLabelText('Player 1'), { target: { value: 'Alice' } });
+    fireEvent.change(screen.getByLabelText('Player 2'), { target: { value: 'Alice' } });
+    fireEvent.change(screen.getByLabelText('Player 3'), { target: { value: 'Bob' } });
+    fireEvent.change(screen.getByLabelText('Player 4'), { target: { value: 'Charlie' } });
+    
+    fireEvent.click(screen.getByRole('button', { name: 'Start Match' }));
+    
+    await waitFor(() => {
+      expect(screen.getByText('All player names must be unique')).toBeInTheDocument();
+    });
+    
+    const player1Input = screen.getByLabelText('Player 1');
+    const player2Input = screen.getByLabelText('Player 2');
+    
+    // Verify error styling is present
+    expect(player1Input).toHaveClass('form-input-error');
+    expect(player2Input).toHaveClass('form-input-error');
+    
+    // Start typing in one of the duplicate fields
+    fireEvent.change(player2Input, { target: { value: 'David' } });
+    
+    // Error styling should be cleared
+    expect(player1Input).not.toHaveClass('form-input-error');
+    expect(player2Input).not.toHaveClass('form-input-error');
+    expect(screen.queryByText('All player names must be unique')).not.toBeInTheDocument();
+  });
+
 
 
   it('calls onStartMatch with trimmed player names when form is valid', async () => {
