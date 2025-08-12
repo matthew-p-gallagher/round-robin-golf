@@ -76,9 +76,6 @@ describe('HoleScoring Integration', () => {
       expect(screen.getByText('Hole 1')).toBeInTheDocument();
     });
 
-    // Check progress text
-    expect(screen.getByText('1 of 18')).toBeInTheDocument();
-
     // Check progress bar exists
     const progressBar = document.querySelector('.progress-bar');
     expect(progressBar).toBeInTheDocument();

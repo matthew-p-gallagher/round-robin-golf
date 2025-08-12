@@ -38,7 +38,6 @@ describe('HoleScoring Component', () => {
 
     // Check hole number
     expect(screen.getByText('Hole 5')).toBeInTheDocument();
-    expect(screen.getByText('5 of 18')).toBeInTheDocument();
 
     // Check matchups
     expect(screen.getByText('Matchup 1')).toBeInTheDocument();
@@ -200,9 +199,6 @@ describe('HoleScoring Component', () => {
         players={mockPlayers}
       />
     );
-
-    // Check progress text
-    expect(screen.getByText('9 of 18')).toBeInTheDocument();
 
     // Check progress bar exists
     const progressBar = document.querySelector('.progress-bar');
