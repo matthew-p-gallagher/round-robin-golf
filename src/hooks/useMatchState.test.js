@@ -36,7 +36,8 @@ describe('useMatchState', () => {
         players: [],
         currentHole: 1,
         phase: 'setup',
-        holeResults: []
+        holeResults: [],
+        maxHoleReached: 1
       });
     });
   });
@@ -398,7 +399,8 @@ describe('useMatchState', () => {
         players: [],
         currentHole: 1,
         phase: 'setup',
-        holeResults: []
+        holeResults: [],
+        maxHoleReached: 1
       });
     });
   });

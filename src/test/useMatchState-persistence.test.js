@@ -27,7 +27,8 @@ describe('useMatchState Persistence Integration', () => {
       ],
       currentHole: 3,
       phase: 'scoring',
-      holeResults: []
+      holeResults: [],
+      maxHoleReached: 3
     };
 
     localStorageMock.getItem.mockReturnValue(JSON.stringify(savedState));
@@ -47,7 +48,8 @@ describe('useMatchState Persistence Integration', () => {
       players: [],
       currentHole: 1,
       phase: 'setup',
-      holeResults: []
+      holeResults: [],
+      maxHoleReached: 1
     });
     expect(result.current.canResumeMatch()).toBe(false);
   });
@@ -111,7 +113,8 @@ describe('useMatchState Persistence Integration', () => {
       ],
       currentHole: 3,
       phase: 'scoring',
-      holeResults: []
+      holeResults: [],
+      maxHoleReached: 3
     };
 
     localStorageMock.getItem.mockReturnValue(JSON.stringify(savedState));
@@ -129,7 +132,8 @@ describe('useMatchState Persistence Integration', () => {
       players: [],
       currentHole: 1,
       phase: 'setup',
-      holeResults: []
+      holeResults: [],
+      maxHoleReached: 1
     });
   });
 
@@ -154,7 +158,8 @@ describe('useMatchState Persistence Integration', () => {
       players: [],
       currentHole: 1,
       phase: 'setup',
-      holeResults: []
+      holeResults: [],
+      maxHoleReached: 1
     });
 
     consoleSpy.mockRestore();
@@ -212,7 +217,8 @@ describe('useMatchState Persistence Integration', () => {
           ]
         }
         // ... more hole results would be here
-      ]
+      ],
+      maxHoleReached: 10
     };
 
     localStorageMock.getItem.mockReturnValue(JSON.stringify(midGameState));

@@ -15,7 +15,8 @@ export function useMatchState() {
       players: [],
       currentHole: 1,
       phase: 'setup',
-      holeResults: []
+      holeResults: [],
+      maxHoleReached: 1
     };
   });
 
@@ -53,7 +54,8 @@ export function useMatchState() {
       players,
       currentHole: 1,
       phase: 'scoring',
-      holeResults: []
+      holeResults: [],
+      maxHoleReached: 1
     });
   };
 
@@ -102,7 +104,8 @@ export function useMatchState() {
       players: updatedPlayers,
       currentHole: nextPhase === 'complete' ? 18 : nextHole,
       phase: nextPhase,
-      holeResults: [...prevState.holeResults, holeResult]
+      holeResults: [...prevState.holeResults, holeResult],
+      maxHoleReached: Math.max(prevState.maxHoleReached, nextPhase === 'complete' ? 18 : nextHole)
     }));
   };
 
@@ -136,7 +139,8 @@ export function useMatchState() {
       players: [],
       currentHole: 1,
       phase: 'setup',
-      holeResults: []
+      holeResults: [],
+      maxHoleReached: 1
     });
   };
 

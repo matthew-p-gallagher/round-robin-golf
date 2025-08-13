@@ -26,6 +26,7 @@
  * @property {number} currentHole - Current hole number (1-18)
  * @property {'setup'|'scoring'|'complete'} phase - Current phase of the match
  * @property {HoleResult[]} holeResults - Results for completed holes
+ * @property {number} maxHoleReached - Furthest hole the user has progressed to (1-18)
  */
 
 export {};
