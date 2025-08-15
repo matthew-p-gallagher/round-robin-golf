@@ -5,7 +5,17 @@ import HoleScoring from './components/HoleScoring.jsx'
 import FinalResults from './components/FinalResults.jsx'
 
 function App() {
-  const { matchState, startMatch, getCurrentMatchups, recordHoleResult, resetMatch, canResumeMatch } = useMatchState();
+  const { 
+    matchState, 
+    startMatch, 
+    getCurrentMatchups, 
+    recordHoleResult, 
+    resetMatch, 
+    canResumeMatch,
+    navigateToHole,
+    updateHoleResult,
+    getMatchupsForHole
+  } = useMatchState();
 
   /**
    * Handle starting a new match with player names
@@ -56,8 +66,11 @@ function App() {
         {matchState.phase === 'scoring' && (
           <HoleScoring
             currentHole={matchState.currentHole}
-            matchups={getCurrentMatchups()}
+            maxHoleReached={matchState.maxHoleReached}
+            matchups={getMatchupsForHole(matchState.currentHole)}
             onRecordResults={handleRecordResults}
+            onNavigateToHole={navigateToHole}
+            onUpdateHoleResult={updateHoleResult}
             players={matchState.players}
           />
         )}
