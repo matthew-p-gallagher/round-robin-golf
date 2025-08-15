@@ -18,7 +18,8 @@ export const mockMatchState = {
   players: mockPlayers,
   currentHole: 1,
   phase: 'setup',
-  holeResults: []
+  holeResults: [],
+  maxHoleReached: 1
 }
 
 export const mockMatchStateInProgress = {
@@ -40,14 +41,16 @@ export const mockMatchStateInProgress = {
         { player1: mockPlayers[1], player2: mockPlayers[3], result: 'player2' }
       ]
     }
-  ]
+  ],
+  maxHoleReached: 5
 }
 
 export const mockMatchStateComplete = {
   players: mockPlayersWithStats,
-  currentHole: 19,
+  currentHole: 18,
   phase: 'complete',
-  holeResults: [] // Would contain all 18 holes in real scenario
+  holeResults: [], // Would contain all 18 holes in real scenario
+  maxHoleReached: 18
 }
 
 // Mock matchup patterns for testing rotation logic

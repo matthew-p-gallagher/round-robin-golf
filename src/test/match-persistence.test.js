@@ -57,7 +57,7 @@ describe('Match Persistence', () => {
         throw new Error('Storage quota exceeded');
       });
 
-      const matchState = { players: [], currentHole: 1, phase: 'setup', holeResults: [] };
+      const matchState = { players: [], currentHole: 1, phase: 'setup', holeResults: [], maxHoleReached: 1 };
 
       expect(() => saveMatchState(matchState)).not.toThrow();
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -80,7 +80,8 @@ describe('Match Persistence', () => {
         ],
         currentHole: 3,
         phase: 'scoring',
-        holeResults: []
+        holeResults: [],
+        maxHoleReached: 3
       };
 
       localStorageMock.getItem.mockReturnValue(JSON.stringify(matchState));
@@ -191,7 +192,8 @@ describe('Match Persistence', () => {
         players: [],
         currentHole: 1,
         phase: 'setup',
-        holeResults: []
+        holeResults: [],
+        maxHoleReached: 1
       };
 
       localStorageMock.getItem.mockReturnValue(JSON.stringify(validState));
@@ -211,7 +213,8 @@ describe('Match Persistence', () => {
         ],
         currentHole: 5,
         phase: 'scoring',
-        holeResults: []
+        holeResults: [],
+        maxHoleReached: 5
       };
 
       localStorageMock.getItem.mockReturnValue(JSON.stringify(validState));
@@ -231,7 +234,8 @@ describe('Match Persistence', () => {
         ],
         currentHole: 18,
         phase: 'complete',
-        holeResults: []
+        holeResults: [],
+        maxHoleReached: 18
       };
 
       localStorageMock.getItem.mockReturnValue(JSON.stringify(validState));

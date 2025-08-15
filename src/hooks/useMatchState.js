@@ -15,7 +15,8 @@ export function useMatchState() {
       players: [],
       currentHole: 1,
       phase: 'setup',
-      holeResults: []
+      holeResults: [],
+      maxHoleReached: 1
     };
   });
 
@@ -53,7 +54,8 @@ export function useMatchState() {
       players,
       currentHole: 1,
       phase: 'scoring',
-      holeResults: []
+      holeResults: [],
+      maxHoleReached: 1
     });
   };
 
@@ -102,7 +104,8 @@ export function useMatchState() {
       players: updatedPlayers,
       currentHole: nextPhase === 'complete' ? 18 : nextHole,
       phase: nextPhase,
-      holeResults: [...prevState.holeResults, holeResult]
+      holeResults: [...prevState.holeResults, holeResult],
+      maxHoleReached: Math.max(prevState.maxHoleReached, nextPhase === 'complete' ? 18 : nextHole)
     }));
   };
 
@@ -136,8 +139,125 @@ export function useMatchState() {
       players: [],
       currentHole: 1,
       phase: 'setup',
-      holeResults: []
+      holeResults: [],
+      maxHoleReached: 1
     });
+  };
+
+  /**
+   * Navigate to a specific hole
+   * @param {number} holeNumber - Hole number to navigate to (1-18)
+   */
+  const navigateToHole = (holeNumber) => {
+    if (holeNumber < 1 || holeNumber > 18) {
+      throw new Error('Hole number must be between 1 and 18');
+    }
+
+    if (holeNumber > matchState.maxHoleReached) {
+      throw new Error(`Cannot navigate beyond hole ${matchState.maxHoleReached}`);
+    }
+
+    setMatchState(prevState => ({
+      ...prevState,
+      currentHole: holeNumber
+    }));
+  };
+
+  /**
+   * Update the result for a specific hole
+   * @param {number} holeNumber - Hole number to update (1-18)
+   * @param {Array} matchupResults - Array of 2 matchup results
+   */
+  const updateHoleResult = (holeNumber, matchupResults) => {
+    if (holeNumber < 1 || holeNumber > 18) {
+      throw new Error('Hole number must be between 1 and 18');
+    }
+
+    if (!Array.isArray(matchupResults) || matchupResults.length !== 2) {
+      throw new Error('Exactly 2 matchup results are required');
+    }
+
+    // Validate that both matchups have results
+    if (matchupResults.some(matchup => !matchup.result)) {
+      throw new Error('Both matchups must have results');
+    }
+
+    // Update the hole result in the holeResults array
+    const updatedHoleResults = [...matchState.holeResults];
+    const existingResultIndex = updatedHoleResults.findIndex(hr => hr.holeNumber === holeNumber);
+
+    const newHoleResult = {
+      holeNumber,
+      matchups: matchupResults
+    };
+
+    if (existingResultIndex >= 0) {
+      updatedHoleResults[existingResultIndex] = newHoleResult;
+    } else {
+      updatedHoleResults.push(newHoleResult);
+      updatedHoleResults.sort((a, b) => a.holeNumber - b.holeNumber);
+    }
+
+    // Recalculate all player stats from scratch
+    const recalculatedPlayers = recalculateStatsFromHole(1, updatedHoleResults);
+
+    setMatchState(prevState => ({
+      ...prevState,
+      holeResults: updatedHoleResults,
+      players: recalculatedPlayers
+    }));
+  };
+
+  /**
+   * Recalculate player statistics from a specific hole forward
+   * @param {number} startingHole - Hole to start recalculation from
+   * @param {HoleResult[]} holeResults - Optional hole results array (uses current state if not provided)
+   * @returns {Player[]} Updated players array with recalculated stats
+   */
+  const recalculateStatsFromHole = (startingHole, holeResults = matchState.holeResults) => {
+    // Reset all players to initial state
+    let updatedPlayers = matchState.players.map(player => ({
+      ...player,
+      points: 0,
+      wins: 0,
+      draws: 0,
+      losses: 0
+    }));
+
+    // Process all hole results from the beginning
+    for (const holeResult of holeResults) {
+      if (holeResult.holeNumber >= startingHole) {
+        updatedPlayers = processHoleResult(updatedPlayers, holeResult.matchups);
+      }
+    }
+
+    return updatedPlayers;
+  };
+
+  /**
+   * Get the matchups for a specific hole
+   * @param {number} holeNumber - Hole number (1-18)
+   * @returns {[Matchup, Matchup]} Array of 2 matchups for the specified hole
+   */
+  const getMatchupsForHole = (holeNumber) => {
+    if (matchState.phase !== 'scoring' || matchState.players.length !== 4) {
+      return [null, null];
+    }
+
+    if (holeNumber < 1 || holeNumber > 18) {
+      throw new Error('Hole number must be between 1 and 18');
+    }
+
+    const matchups = createMatchupsForHole(matchState.players, holeNumber);
+    
+    // Check if we have existing results for this hole
+    const existingResult = matchState.holeResults.find(hr => hr.holeNumber === holeNumber);
+    if (existingResult) {
+      // Return matchups with existing results
+      return existingResult.matchups;
+    }
+
+    return matchups;
   };
 
   /**
@@ -156,6 +276,10 @@ export function useMatchState() {
     calculatePlayerStats,
     getPlayerThru,
     resetMatch,
-    canResumeMatch
+    canResumeMatch,
+    navigateToHole,
+    updateHoleResult,
+    recalculateStatsFromHole,
+    getMatchupsForHole
   };
 }

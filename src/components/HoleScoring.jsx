@@ -5,25 +5,36 @@ import PointsTable from './PointsTable.jsx';
  * HoleScoring component for recording matchup results on each hole
  * @param {Object} props
  * @param {number} props.currentHole - Current hole number (1-18)
+ * @param {number} props.maxHoleReached - Maximum hole reached in the match
  * @param {[Matchup, Matchup]} props.matchups - Array of 2 matchups for current hole
  * @param {Function} props.onRecordResults - Callback to record hole results
+ * @param {Function} props.onNavigateToHole - Callback to navigate to a specific hole
+ * @param {Function} props.onUpdateHoleResult - Callback to update results for a specific hole
  * @param {Player[]} props.players - Array of players for stats display
  */
-function HoleScoring({ currentHole, matchups, onRecordResults, players }) {
+function HoleScoring({ 
+  currentHole, 
+  maxHoleReached = currentHole, // Default to currentHole if not provided
+  matchups, 
+  onRecordResults, 
+  onNavigateToHole = () => {}, // Default empty function for tests
+  onUpdateHoleResult = () => {}, // Default empty function for tests
+  players 
+}) {
   const [matchupResults, setMatchupResults] = useState([
-    { ...matchups[0], result: null },
-    { ...matchups[1], result: null }
+    { ...matchups[0], result: matchups[0].result || null },
+    { ...matchups[1], result: matchups[1].result || null }
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Reset results when hole changes
+  // Reset results when hole changes or matchups change
   useEffect(() => {
     setMatchupResults([
-      { ...matchups[0], result: null },
-      { ...matchups[1], result: null }
+      { ...matchups[0], result: matchups[0].result || null },
+      { ...matchups[1], result: matchups[1].result || null }
     ]);
     setIsSubmitting(false);
-  }, [currentHole]);
+  }, [currentHole, matchups]);
 
   /**
    * Handle result selection for a matchup
@@ -48,9 +59,27 @@ function HoleScoring({ currentHole, matchups, onRecordResults, players }) {
   };
 
   /**
-   * Handle proceeding to next hole
+   * Handle navigating to previous hole
    */
-  const handleNextHole = async () => {
+  const handlePreviousHole = () => {
+    if (currentHole > 1) {
+      onNavigateToHole(currentHole - 1);
+    }
+  };
+
+  /**
+   * Handle navigating to next hole
+   */
+  const handleNextHole = () => {
+    if (currentHole < maxHoleReached) {
+      onNavigateToHole(currentHole + 1);
+    }
+  };
+
+  /**
+   * Handle proceeding to next hole (recording results)
+   */
+  const handleRecordAndProceed = async () => {
     if (!areBothMatchupsComplete()) {
       return;
     }
@@ -58,12 +87,42 @@ function HoleScoring({ currentHole, matchups, onRecordResults, players }) {
     setIsSubmitting(true);
     
     try {
-      await onRecordResults(matchupResults);
+      if (currentHole === maxHoleReached) {
+        // Recording new results
+        await onRecordResults(matchupResults);
+      } else {
+        // Updating existing results
+        await onUpdateHoleResult(currentHole, matchupResults);
+      }
     } catch (error) {
       console.error('Error recording results:', error);
       // Reset submitting state on error
       setIsSubmitting(false);
     }
+  };
+
+  /**
+   * Check if we're viewing a completed hole (not the current frontier)
+   * @returns {boolean} True if viewing a previously completed hole
+   */
+  const isViewingCompletedHole = () => {
+    return currentHole < maxHoleReached;
+  };
+
+  /**
+   * Check if we can navigate to the next hole
+   * @returns {boolean} True if next hole navigation is allowed
+   */
+  const canNavigateNext = () => {
+    return currentHole < maxHoleReached;
+  };
+
+  /**
+   * Check if we can proceed to record results for next hole
+   * @returns {boolean} True if we can record and proceed
+   */
+  const canRecordAndProceed = () => {
+    return areBothMatchupsComplete() && currentHole === maxHoleReached;
   };
 
   /**
@@ -80,9 +139,32 @@ function HoleScoring({ currentHole, matchups, onRecordResults, players }) {
   return (
     <div className="screen">
       <div className="container">
-        {/* Hole Header */}
+        {/* Hole Header with Navigation */}
         <div className="hole-header">
-          <h2 className="hole-title">Hole {currentHole}</h2>
+          <div className="hole-navigation">
+            <button
+              type="button"
+              className="nav-button nav-button-prev"
+              onClick={handlePreviousHole}
+              disabled={currentHole === 1 || isSubmitting}
+            >
+              ← Previous
+            </button>
+            
+            <div className="hole-info">
+              <h2 className="hole-title">Hole {currentHole}</h2>
+            </div>
+            
+            <button
+              type="button"
+              className="nav-button nav-button-next"
+              onClick={handleNextHole}
+              disabled={!canNavigateNext() || isSubmitting}
+            >
+              Next →
+            </button>
+          </div>
+          
           <div className="hole-progress">
             <div className="progress-bar">
               <div 
@@ -149,19 +231,28 @@ function HoleScoring({ currentHole, matchups, onRecordResults, players }) {
           />
         </div>
 
-        {/* Next Hole Button */}
-        <div className="next-hole-container">
-
-          
-          <button
-            type="button"
-            className="next-hole-button"
-            onClick={handleNextHole}
-            disabled={!areBothMatchupsComplete() || isSubmitting}
-          >
-            {isSubmitting ? 'Recording Results...' : 
-             currentHole === 18 ? 'Finish Match' : 'Next Hole'}
-          </button>
+        {/* Action Buttons */}
+        <div className="action-buttons-container">
+          {isViewingCompletedHole() ? (
+            <button
+              type="button"
+              className="update-results-button"
+              onClick={handleRecordAndProceed}
+              disabled={!areBothMatchupsComplete() || isSubmitting}
+            >
+              {isSubmitting ? 'Updating Results...' : 'Update Results'}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="next-hole-button"
+              onClick={handleRecordAndProceed}
+              disabled={!canRecordAndProceed() || isSubmitting}
+            >
+              {isSubmitting ? 'Recording Results...' : 
+               currentHole === 18 ? 'Finish Match' : 'Next Hole'}
+            </button>
+          )}
         </div>
       </div>
     </div>

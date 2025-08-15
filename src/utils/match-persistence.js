@@ -82,7 +82,8 @@ function isValidMatchState(state) {
   if (!Array.isArray(state.players) || 
       typeof state.currentHole !== 'number' || 
       typeof state.phase !== 'string' || 
-      !Array.isArray(state.holeResults)) {
+      !Array.isArray(state.holeResults) ||
+      typeof state.maxHoleReached !== 'number') {
     return false;
   }
   
@@ -93,6 +94,11 @@ function isValidMatchState(state) {
   
   // Check currentHole is in valid range
   if (state.currentHole < 1 || state.currentHole > 18) {
+    return false;
+  }
+  
+  // Check maxHoleReached is in valid range and >= currentHole
+  if (state.maxHoleReached < 1 || state.maxHoleReached > 18 || state.maxHoleReached < state.currentHole) {
     return false;
   }
   
