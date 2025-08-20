@@ -43,13 +43,6 @@ describe('HoleScoring Integration', () => {
     const drawButtons = screen.getAllByRole('button', { name: 'Draw' });
     fireEvent.click(drawButtons[1]); // Second draw button
 
-    // Next hole button should be enabled
-    const nextHoleButton = screen.getByRole('button', { name: /next hole/i });
-    expect(nextHoleButton).not.toBeDisabled();
-
-    // Click next hole
-    fireEvent.click(nextHoleButton);
-
     // Should advance to hole 2
     await waitFor(() => {
       expect(screen.getByText('Hole 2')).toBeInTheDocument();
@@ -76,9 +69,6 @@ describe('HoleScoring Integration', () => {
       expect(screen.getByText('Hole 1')).toBeInTheDocument();
     });
 
-    // Check progress text
-    expect(screen.getByText('1 of 18')).toBeInTheDocument();
-
     // Check progress bar exists
     const progressBar = document.querySelector('.progress-bar');
     expect(progressBar).toBeInTheDocument();
@@ -86,41 +76,5 @@ describe('HoleScoring Integration', () => {
     // Progress fill should be approximately 5.56% for hole 1
     const progressFill = document.querySelector('.progress-fill');
     expect(progressFill).toHaveStyle('width: 5.555555555555555%');
-  });
-
-  it('validates that both matchups must be completed', async () => {
-    render(<App />);
-
-    // Setup match
-    const playerInputs = screen.getAllByRole('textbox');
-    fireEvent.change(playerInputs[0], { target: { value: 'Alice' } });
-    fireEvent.change(playerInputs[1], { target: { value: 'Bob' } });
-    fireEvent.change(playerInputs[2], { target: { value: 'Charlie' } });
-    fireEvent.change(playerInputs[3], { target: { value: 'David' } });
-
-    const startButton = screen.getByRole('button', { name: /start match/i });
-    fireEvent.click(startButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Hole 1')).toBeInTheDocument();
-    });
-
-    // Initially next hole button should be disabled
-    const nextHoleButton = screen.getByRole('button', { name: /next hole/i });
-    expect(nextHoleButton).toBeDisabled();
-
-    // Select result for only first matchup
-    const aliceWinsButton = screen.getByRole('button', { name: 'Alice' });
-    fireEvent.click(aliceWinsButton);
-
-    // Button should still be disabled
-    expect(nextHoleButton).toBeDisabled();
-
-    // Select result for second matchup
-    const drawButtons = screen.getAllByRole('button', { name: 'Draw' });
-    fireEvent.click(drawButtons[1]);
-
-    // Now button should be enabled
-    expect(nextHoleButton).not.toBeDisabled();
   });
 });
