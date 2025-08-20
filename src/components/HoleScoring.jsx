@@ -26,6 +26,7 @@ function HoleScoring({
     { ...matchups[1], result: matchups[1].result || null }
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [autoSaveStatus, setAutoSaveStatus] = useState(null); // null, 'saving', 'saved'
 
   // Reset results when hole changes or matchups change
   useEffect(() => {
@@ -41,14 +42,47 @@ function HoleScoring({
    * @param {number} matchupIndex - Index of the matchup (0 or 1)
    * @param {'player1'|'player2'|'draw'} result - Selected result
    */
-  const handleResultSelect = (matchupIndex, result) => {
+  const handleResultSelect = async (matchupIndex, result) => {
     const newResults = [...matchupResults];
     newResults[matchupIndex] = {
       ...newResults[matchupIndex],
       result: result
     };
     setMatchupResults(newResults);
+
+    // Check if both matchups are now complete and auto-save
+    const bothComplete = newResults.every(matchup => matchup.result !== null);
+    if (bothComplete) {
+      await handleAutoSave(newResults);
+    }
   };
+
+/**
+* Handle automatic saving when both matchups are complete
+* @param {Array} results - Array of 2 matchup results
+*/
+const handleAutoSave = async (results) => {
+setAutoSaveStatus('saving');
+
+try {
+  if (currentHole === maxHoleReached) {
+    // Recording new results - add delay before auto-advancing
+    setTimeout(async () => {
+      await onRecordResults(results);
+    }, 800); // 1 second delay
+  } else {
+    // Updating existing results
+    await onUpdateHoleResult(currentHole, results);
+  }
+  
+  setAutoSaveStatus('saved');
+  // Clear the saved status after 2 seconds
+  setTimeout(() => setAutoSaveStatus(null), 2000);
+} catch (error) {
+  console.error('Error auto-saving results:', error);
+  setAutoSaveStatus(null);
+}
+};
 
   /**
    * Check if both matchups have results selected
@@ -231,29 +265,7 @@ function HoleScoring({
           />
         </div>
 
-        {/* Action Buttons */}
-        <div className="action-buttons-container">
-          {isViewingCompletedHole() ? (
-            <button
-              type="button"
-              className="update-results-button"
-              onClick={handleRecordAndProceed}
-              disabled={!areBothMatchupsComplete() || isSubmitting}
-            >
-              {isSubmitting ? 'Updating Results...' : 'Update Results'}
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="next-hole-button"
-              onClick={handleRecordAndProceed}
-              disabled={!canRecordAndProceed() || isSubmitting}
-            >
-              {isSubmitting ? 'Recording Results...' : 
-               currentHole === 18 ? 'Finish Match' : 'Next Hole'}
-            </button>
-          )}
-        </div>
+        
       </div>
     </div>
   );

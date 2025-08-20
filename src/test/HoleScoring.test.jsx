@@ -89,10 +89,6 @@ describe('HoleScoring Component', () => {
       />
     );
 
-    // Initially, Next Hole button should be disabled
-    const nextButton = screen.getByRole('button', { name: /next hole/i });
-    expect(nextButton).toBeDisabled();
-
     // Select winner for first matchup
     const aliceWinsButton = screen.getByRole('button', { name: 'Alice' });
     fireEvent.click(aliceWinsButton);
@@ -102,12 +98,9 @@ describe('HoleScoring Component', () => {
     const drawButtons = screen.getAllByRole('button', { name: 'Draw' });
     fireEvent.click(drawButtons[1]); // Second draw button
     expect(drawButtons[1]).toHaveClass('selected');
-
-    // Now Next Hole button should be enabled
-    expect(nextButton).not.toBeDisabled();
   });
 
-  it('shows validation message when matchups are incomplete', () => {
+  it('does not auto-save when only one matchup is complete', async () => {
     const mockOnRecordResults = vi.fn();
 
     render(
@@ -119,13 +112,16 @@ describe('HoleScoring Component', () => {
       />
     );
 
-
     // Select result for only first matchup
     const aliceWinsButton = screen.getByRole('button', { name: 'Alice' });
     fireEvent.click(aliceWinsButton);
+
+    // Wait briefly to ensure no auto-save occurs
+    await new Promise(resolve => setTimeout(resolve, 100));
+    expect(mockOnRecordResults).not.toHaveBeenCalled();
   });
 
-  it('calls onRecordResults when both matchups are complete and Next Hole is clicked', async () => {
+  it('auto-saves with delay when both matchups are complete', async () => {
     const mockOnRecordResults = vi.fn();
 
     render(
@@ -144,11 +140,7 @@ describe('HoleScoring Component', () => {
     const drawButtons = screen.getAllByRole('button', { name: 'Draw' });
     fireEvent.click(drawButtons[1]);
 
-    // Click Next Hole
-    const nextButton = screen.getByRole('button', { name: /next hole/i });
-    fireEvent.click(nextButton);
-
-    // Verify onRecordResults was called with correct data
+    // Verify onRecordResults was called with correct data after delay
     await waitFor(() => {
       expect(mockOnRecordResults).toHaveBeenCalledWith([
         {
@@ -162,30 +154,44 @@ describe('HoleScoring Component', () => {
           result: 'draw'
         }
       ]);
-    });
+    }, { timeout: 2000 }); // Allow time for 800ms delay
   });
 
-  it('shows "Finish Match" button text on hole 18', () => {
-    const mockOnRecordResults = vi.fn();
+  it('auto-saves immediately when updating existing hole results', async () => {
+    const mockOnUpdateHoleResult = vi.fn();
 
     render(
       <HoleScoring
-        currentHole={18}
+        currentHole={3}
+        maxHoleReached={5} // Viewing a previously completed hole
         matchups={mockMatchups}
-        onRecordResults={mockOnRecordResults}
+        onUpdateHoleResult={mockOnUpdateHoleResult}
         players={mockPlayers}
       />
     );
 
-    // Select results for both matchups to enable button
+    // Select results for both matchups
     const aliceWinsButton = screen.getByRole('button', { name: 'Alice' });
     fireEvent.click(aliceWinsButton);
 
     const drawButtons = screen.getAllByRole('button', { name: 'Draw' });
     fireEvent.click(drawButtons[1]);
 
-    // Check button text
-    expect(screen.getByRole('button', { name: 'Finish Match' })).toBeInTheDocument();
+    // Verify onUpdateHoleResult was called immediately (no delay for existing holes)
+    await waitFor(() => {
+      expect(mockOnUpdateHoleResult).toHaveBeenCalledWith(3, [
+        {
+          player1: mockPlayers[0],
+          player2: mockPlayers[1],
+          result: 'player1'
+        },
+        {
+          player1: mockPlayers[2],
+          player2: mockPlayers[3],
+          result: 'draw'
+        }
+      ]);
+    }, { timeout: 500 }); // Should happen quickly
   });
 
   it('shows progress bar correctly', () => {
