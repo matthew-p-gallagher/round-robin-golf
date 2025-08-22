@@ -28,6 +28,5 @@ review-files/
 commit-msg.txt
 .claude/
 CLAUDE.md
-
-# Test coverage
 coverage/
+next-steps.md
