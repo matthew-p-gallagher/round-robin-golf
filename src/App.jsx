@@ -1,10 +1,18 @@
+import { useState } from 'react'
 import './App.css'
+import { useAuth } from './context/AuthContext.jsx'
 import { useMatchState } from './hooks/useMatchState.js'
+import Login from './components/auth/Login.jsx'
+import Signup from './components/auth/Signup.jsx'
+import ResetPassword from './components/auth/ResetPassword.jsx'
 import MatchSetup from './components/MatchSetup.jsx'
 import HoleScoring from './components/HoleScoring.jsx'
 import FinalResults from './components/FinalResults.jsx'
 
 function App() {
+  const { user, loading } = useAuth()
+  const [authView, setAuthView] = useState('login')
+  
   const { 
     matchState, 
     startMatch, 
@@ -51,6 +59,44 @@ function App() {
       throw error;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="app">
+        <main className="app-main">
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>Loading...</p>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="app">
+        <main className="app-main">
+          {authView === 'login' && (
+            <Login 
+              onShowSignup={() => setAuthView('signup')}
+              onShowResetPassword={() => setAuthView('reset')}
+            />
+          )}
+          {authView === 'signup' && (
+            <Signup 
+              onShowLogin={() => setAuthView('login')}
+            />
+          )}
+          {authView === 'reset' && (
+            <ResetPassword 
+              onShowLogin={() => setAuthView('login')}
+            />
+          )}
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="app">
