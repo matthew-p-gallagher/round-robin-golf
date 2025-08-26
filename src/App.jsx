@@ -10,11 +10,13 @@ import HoleScoring from './components/HoleScoring.jsx'
 import FinalResults from './components/FinalResults.jsx'
 
 function App() {
-  const { user, loading } = useAuth()
+  const { user, loading, signOut } = useAuth()
   const [authView, setAuthView] = useState('login')
   
   const { 
     matchState, 
+    loading: matchLoading,
+    error: matchError,
     startMatch, 
     getCurrentMatchups, 
     recordHoleResult, 
@@ -23,7 +25,7 @@ function App() {
     navigateToHole,
     updateHoleResult,
     getMatchupsForHole
-  } = useMatchState();
+  } = useMatchState(user);
 
   /**
    * Handle starting a new match with player names
@@ -40,7 +42,7 @@ function App() {
 
   /**
    * Handle resuming a saved match
-   * The match state is already loaded from localStorage in useMatchState
+   * The match state is already loaded from Supabase/localStorage in useMatchState
    */
   const handleResumeMatch = () => {
     // The match state is already loaded, no additional action needed
@@ -60,7 +62,15 @@ function App() {
     }
   };
 
-  if (loading) {
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  if (loading || matchLoading) {
     return (
       <div className="app">
         <main className="app-main">
@@ -100,12 +110,30 @@ function App() {
 
   return (
     <div className="app">
+      <header className="app-header">
+        <div className="header-content">
+          <h1>Round Robin Golf</h1>
+          <div className="user-info">
+            <span>{user.email}</span>
+            <button onClick={handleSignOut} className="sign-out-button">
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </header>
+      
       <main className="app-main">
+        {matchError && (
+          <div className="error-message">
+            <p>Error: {matchError}</p>
+          </div>
+        )}
+        
         {matchState.phase === 'setup' && (
           <MatchSetup 
             onStartMatch={handleStartMatch}
             onResumeMatch={handleResumeMatch}
-            canResume={canResumeMatch()}
+            canResumeMatch={canResumeMatch}
           />
         )}
         

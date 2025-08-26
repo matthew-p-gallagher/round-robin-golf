@@ -1,6 +1,31 @@
 -- Round Robin Golf Database Schema
 -- Complete Supabase setup for user match persistence
 
+-- =============================================================================
+-- SUPABASE BUILT-IN AUTHENTICATION SYSTEM
+-- =============================================================================
+-- Supabase provides a built-in authentication system in the `auth` schema:
+--
+-- auth.users table (managed by Supabase):
+-- - id (uuid, primary key) - unique user identifier
+-- - email (text) - user's email address
+-- - encrypted_password (text) - hashed password
+-- - email_confirmed_at (timestamptz) - when email was confirmed
+-- - created_at (timestamptz) - account creation time
+-- - updated_at (timestamptz) - last profile update
+-- - raw_user_meta_data (jsonb) - additional user metadata
+-- - raw_app_meta_data (jsonb) - app-specific metadata
+--
+-- Functions available:
+-- - auth.uid() - returns the current user's ID (null if not authenticated)
+-- - auth.jwt() - returns the current JWT token claims
+--
+-- Authentication handled via:
+-- - Supabase Auth API (signup, login, logout, password reset)
+-- - Row Level Security (RLS) for data isolation
+-- - JWT tokens for session management
+-- =============================================================================
+
 -- Main table: One current match per authenticated user
 CREATE TABLE user_current_match (
   user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,

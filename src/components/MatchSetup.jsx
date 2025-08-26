@@ -1,17 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 /**
  * MatchSetup component for entering 4 player names and starting a match
  * @param {Object} props
  * @param {Function} props.onStartMatch - Callback function to start the match with player names
  * @param {Function} props.onResumeMatch - Callback function to resume a saved match
- * @param {boolean} props.canResume - Whether there is a saved match that can be resumed
+ * @param {Function} props.canResumeMatch - Async function to check if there is a saved match that can be resumed
  */
-function MatchSetup({ onStartMatch, onResumeMatch, canResume }) {
+function MatchSetup({ onStartMatch, onResumeMatch, canResumeMatch }) {
   const [playerNames, setPlayerNames] = useState(['', '', '', '']);
   const [errors, setErrors] = useState([]);
   const [duplicateIndices, setDuplicateIndices] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [canResume, setCanResume] = useState(false);
+  const [checkingResume, setCheckingResume] = useState(true);
+
+  // Check if there's a saved match that can be resumed
+  useEffect(() => {
+    async function checkForSavedMatch() {
+      try {
+        const hasMatch = await canResumeMatch();
+        setCanResume(hasMatch);
+      } catch (error) {
+        console.error('Error checking for saved match:', error);
+        setCanResume(false);
+      } finally {
+        setCheckingResume(false);
+      }
+    }
+
+    checkForSavedMatch();
+  }, [canResumeMatch]);
 
   /**
    * Handle input change for player name fields
@@ -118,6 +137,18 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResume }) {
       onResumeMatch();
     }
   };
+
+  if (checkingResume) {
+    return (
+      <div className="screen">
+        <div className="container">
+          <div className="loading-container">
+            <p>Checking for saved matches...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="screen">

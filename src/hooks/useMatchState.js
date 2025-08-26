@@ -1,38 +1,106 @@
 import { useState, useEffect } from 'react';
 import { createMatchupsForHole } from '../utils/matchup-rotation.js';
 import { createPlayer, processHoleResult, sortPlayersByRanking, calculateHolesCompleted } from '../utils/player-stats.js';
-import { saveMatchState, loadMatchState, clearMatchState, hasSavedMatchState } from '../utils/match-persistence.js';
+import { 
+  saveMatchStateToSupabase, 
+  loadMatchStateFromSupabase, 
+  clearMatchStateFromSupabase, 
+  hasMatchStateInSupabase 
+} from '../utils/supabase-match-persistence.js';
+// Keep localStorage as fallback for offline support
+import { saveMatchState, loadMatchState, clearMatchState } from '../utils/match-persistence.js';
 
 /**
  * Custom hook for managing golf match state with persistence
+ * @param {Object} user - The authenticated user object (with id property)
  * @returns {Object} Match state and functions to manipulate it
  */
-export function useMatchState() {
-  const [matchState, setMatchState] = useState(() => {
-    // Try to load saved state on initialization
-    const savedState = loadMatchState();
-    return savedState || {
-      players: [],
-      currentHole: 1,
-      phase: 'setup',
-      holeResults: [],
-      maxHoleReached: 1
-    };
+export function useMatchState(user) {
+  const [matchState, setMatchState] = useState({
+    players: [],
+    currentHole: 1,
+    phase: 'setup',
+    holeResults: [],
+    maxHoleReached: 1
   });
+  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Save state to localStorage whenever it changes
+  // Load user's match state when they log in, clear when they log out
   useEffect(() => {
-    // Only save if we're not in the initial setup phase with no players
-    if (matchState.phase !== 'setup' || matchState.players.length > 0) {
-      saveMatchState(matchState);
+    async function loadUserMatchState() {
+      if (!user?.id) {
+        // User logged out - clear match state and load from localStorage as fallback
+        setMatchState({
+          players: [],
+          currentHole: 1,
+          phase: 'setup',
+          holeResults: [],
+          maxHoleReached: 1
+        });
+        
+        const savedState = loadMatchState();
+        if (savedState) {
+          setMatchState(savedState);
+        }
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const savedState = await loadMatchStateFromSupabase(user.id);
+        if (savedState) {
+          setMatchState(savedState);
+        }
+      } catch (err) {
+        console.error('Error loading match state:', err);
+        setError('Failed to load match data');
+        // Fallback to localStorage if Supabase fails
+        const localState = loadMatchState();
+        if (localState) {
+          setMatchState(localState);
+        }
+      } finally {
+        setLoading(false);
+      }
     }
-  }, [matchState]);
+
+    loadUserMatchState();
+  }, [user?.id]);
+
+  // Save state to Supabase/localStorage whenever it changes
+  useEffect(() => {
+    async function saveCurrentState() {
+      // Only save if we're not in the initial setup phase with no players
+      if (matchState.phase === 'setup' && matchState.players.length === 0) {
+        return;
+      }
+
+      // Save to localStorage as fallback
+      saveMatchState(matchState);
+
+      // If user is authenticated, also save to Supabase
+      if (user?.id) {
+        try {
+          await saveMatchStateToSupabase(matchState, user.id);
+        } catch (err) {
+          console.error('Error saving to Supabase:', err);
+          setError('Failed to save match data to server');
+        }
+      }
+    }
+
+    saveCurrentState();
+  }, [matchState, user?.id]);
 
   /**
    * Initialize a new match with 4 players
    * @param {string[]} playerNames - Array of 4 player names
    */
-  const startMatch = (playerNames) => {
+  const startMatch = async (playerNames) => {
     if (!Array.isArray(playerNames) || playerNames.length !== 4) {
       throw new Error('Exactly 4 player names are required');
     }
@@ -76,7 +144,7 @@ export function useMatchState() {
    * Record the results for the current hole and advance to next hole
    * @param {Array} matchupResults - Array of 2 matchup results
    */
-  const recordHoleResult = (matchupResults) => {
+  const recordHoleResult = async (matchupResults) => {
     if (!Array.isArray(matchupResults) || matchupResults.length !== 2) {
       throw new Error('Exactly 2 matchup results are required');
     }
@@ -133,15 +201,32 @@ export function useMatchState() {
   /**
    * Reset the match to initial state and clear saved data
    */
-  const resetMatch = () => {
-    clearMatchState();
-    setMatchState({
-      players: [],
-      currentHole: 1,
-      phase: 'setup',
-      holeResults: [],
-      maxHoleReached: 1
-    });
+  const resetMatch = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Clear from localStorage
+      clearMatchState();
+      
+      // Clear from Supabase if user is authenticated
+      if (user?.id) {
+        await clearMatchStateFromSupabase(user.id);
+      }
+
+      setMatchState({
+        players: [],
+        currentHole: 1,
+        phase: 'setup',
+        holeResults: [],
+        maxHoleReached: 1
+      });
+    } catch (err) {
+      console.error('Error resetting match:', err);
+      setError('Failed to reset match data');
+    } finally {
+      setLoading(false);
+    }
   };
 
   /**
@@ -262,14 +347,26 @@ export function useMatchState() {
 
   /**
    * Check if there is a saved match that can be resumed
-   * @returns {boolean} True if there is a saved match
+   * @returns {Promise<boolean>} True if there is a saved match
    */
-  const canResumeMatch = () => {
+  const canResumeMatch = async () => {
+    if (user?.id) {
+      try {
+        return await hasMatchStateInSupabase(user.id);
+      } catch (err) {
+        console.error('Error checking for saved match:', err);
+        // Fallback to localStorage check
+      }
+    }
+    
+    // Fallback for non-authenticated users or if Supabase fails
     return hasSavedMatchState();
   };
 
   return {
     matchState,
+    loading,
+    error,
     startMatch,
     getCurrentMatchups,
     recordHoleResult,
