@@ -8,7 +8,7 @@ import {
   hasMatchStateInSupabase 
 } from '../utils/supabase-match-persistence.js';
 // Keep localStorage as fallback for offline support
-import { saveMatchState, loadMatchState, clearMatchState } from '../utils/match-persistence.js';
+import { saveMatchState, loadMatchState, clearMatchState, hasSavedMatchState } from '../utils/match-persistence.js';
 
 /**
  * Custom hook for managing golf match state with persistence

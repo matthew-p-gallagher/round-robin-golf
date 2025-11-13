@@ -17,7 +17,7 @@ describe('useMatchState Persistence Integration', () => {
     vi.clearAllMocks();
   });
 
-  it('should initialize with saved state when available', () => {
+  it('should initialize with saved state when available', async () => {
     const savedState = {
       players: [
         { name: 'Alice', points: 6, wins: 2, draws: 0, losses: 0 },
@@ -36,10 +36,10 @@ describe('useMatchState Persistence Integration', () => {
     const { result } = renderHook(() => useMatchState());
 
     expect(result.current.matchState).toEqual(savedState);
-    expect(result.current.canResumeMatch()).toBe(true);
+    expect(await result.current.canResumeMatch()).toBe(true);
   });
 
-  it('should initialize with default state when no saved state exists', () => {
+  it('should initialize with default state when no saved state exists', async () => {
     localStorageMock.getItem.mockReturnValue(null);
 
     const { result } = renderHook(() => useMatchState());
@@ -51,7 +51,7 @@ describe('useMatchState Persistence Integration', () => {
       holeResults: [],
       maxHoleReached: 1
     });
-    expect(result.current.canResumeMatch()).toBe(false);
+    expect(await result.current.canResumeMatch()).toBe(false);
   });
 
   it('should save state to localStorage when match is started', () => {
@@ -198,7 +198,7 @@ describe('useMatchState Persistence Integration', () => {
     );
   });
 
-  it('should resume match in the middle of play', () => {
+  it('should resume match in the middle of play', async () => {
     const midGameState = {
       players: [
         { name: 'Alice', points: 9, wins: 3, draws: 0, losses: 2 },
@@ -226,7 +226,7 @@ describe('useMatchState Persistence Integration', () => {
     const { result } = renderHook(() => useMatchState());
 
     expect(result.current.matchState).toEqual(midGameState);
-    expect(result.current.canResumeMatch()).toBe(true);
+    expect(await result.current.canResumeMatch()).toBe(true);
 
     // Should be able to continue playing
     const matchups = result.current.getCurrentMatchups();

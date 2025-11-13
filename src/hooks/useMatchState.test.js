@@ -62,34 +62,34 @@ describe('useMatchState', () => {
       });
     });
 
-    it('should throw error if not exactly 4 players provided', () => {
+    it('should throw error if not exactly 4 players provided', async () => {
       const { result } = renderHook(() => useMatchState());
-      
-      expect(() => {
-        act(() => {
-          result.current.startMatch(['Alice', 'Bob']);
+
+      await expect(async () => {
+        await act(async () => {
+          await result.current.startMatch(['Alice', 'Bob']);
         });
-      }).toThrow('Exactly 4 player names are required');
+      }).rejects.toThrow('Exactly 4 player names are required');
     });
 
-    it('should throw error if player names are not unique', () => {
+    it('should throw error if player names are not unique', async () => {
       const { result } = renderHook(() => useMatchState());
-      
-      expect(() => {
-        act(() => {
-          result.current.startMatch(['Alice', 'Bob', 'Alice', 'David']);
+
+      await expect(async () => {
+        await act(async () => {
+          await result.current.startMatch(['Alice', 'Bob', 'Alice', 'David']);
         });
-      }).toThrow('All player names must be unique');
+      }).rejects.toThrow('All player names must be unique');
     });
 
-    it('should throw error if any player name is empty', () => {
+    it('should throw error if any player name is empty', async () => {
       const { result } = renderHook(() => useMatchState());
-      
-      expect(() => {
-        act(() => {
-          result.current.startMatch(['Alice', '', 'Charlie', 'David']);
+
+      await expect(async () => {
+        await act(async () => {
+          await result.current.startMatch(['Alice', '', 'Charlie', 'David']);
         });
-      }).toThrow('All player names must be non-empty');
+      }).rejects.toThrow('All player names must be non-empty');
     });
 
     it('should trim whitespace from player names', () => {
@@ -143,25 +143,25 @@ describe('useMatchState', () => {
       });
     });
 
-    it('should throw error if not exactly 2 matchup results provided', () => {
-      expect(() => {
-        act(() => {
-          hook.result.current.recordHoleResult([]);
+    it('should throw error if not exactly 2 matchup results provided', async () => {
+      await expect(async () => {
+        await act(async () => {
+          await hook.result.current.recordHoleResult([]);
         });
-      }).toThrow('Exactly 2 matchup results are required');
+      }).rejects.toThrow('Exactly 2 matchup results are required');
     });
 
-    it('should throw error if any matchup lacks a result', () => {
+    it('should throw error if any matchup lacks a result', async () => {
       const incompleteResults = [
         { player1: { name: 'Alice' }, player2: { name: 'Bob' }, result: 'player1' },
         { player1: { name: 'Charlie' }, player2: { name: 'David' }, result: null }
       ];
 
-      expect(() => {
-        act(() => {
-          hook.result.current.recordHoleResult(incompleteResults);
+      await expect(async () => {
+        await act(async () => {
+          await hook.result.current.recordHoleResult(incompleteResults);
         });
-      }).toThrow('Both matchups must have results before proceeding');
+      }).rejects.toThrow('Both matchups must have results before proceeding');
     });
 
     it('should award 3 points for wins and update win/loss stats', () => {
@@ -267,17 +267,17 @@ describe('useMatchState', () => {
       });
     });
 
-    it('should throw error for invalid player in matchup result', () => {
+    it('should throw error for invalid player in matchup result', async () => {
       const invalidResults = [
         { player1: { name: 'InvalidPlayer' }, player2: { name: 'Bob' }, result: 'player1' },
         { player1: { name: 'Charlie' }, player2: { name: 'David' }, result: 'player2' }
       ];
 
-      expect(() => {
-        act(() => {
-          hook.result.current.recordHoleResult(invalidResults);
+      await expect(async () => {
+        await act(async () => {
+          await hook.result.current.recordHoleResult(invalidResults);
         });
-      }).toThrow('Matchup contains players not found in players array');
+      }).rejects.toThrow('Matchup contains players not found in players array');
     });
   });
 
