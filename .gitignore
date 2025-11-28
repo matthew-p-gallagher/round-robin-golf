@@ -34,4 +34,5 @@ commit-msg.txt
 .claude/
 CLAUDE.md
 coverage/
-PROJECT_STATUS.md
+TODO.md
+ISSUES.md

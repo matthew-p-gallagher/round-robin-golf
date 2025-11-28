@@ -10,7 +10,7 @@ export default function Login({ onShowSignup, onShowResetPassword }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!email || !password) {
       setError('Please fill in all fields')
       return
@@ -71,8 +71,8 @@ export default function Login({ onShowSignup, onShowResetPassword }) {
 
           {error && <div className="auth-error">{error}</div>}
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="auth-button primary"
             disabled={loading}
           >

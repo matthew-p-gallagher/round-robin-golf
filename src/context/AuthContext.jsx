@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (email, password) => {
     setError(null)
     setLoading(true)
-    
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -91,11 +91,11 @@ export const AuthProvider = ({ children }) => {
 
   const resetPassword = async (email) => {
     setError(null)
-    
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin
     })
-    
+
     if (error) {
       setError(error.message)
       throw error
