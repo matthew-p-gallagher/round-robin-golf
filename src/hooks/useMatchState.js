@@ -79,11 +79,13 @@ export function useMatchState(user) {
         return;
       }
 
-      // Save to localStorage as fallback
-      saveMatchState(matchState);
-
-      // If user is authenticated, also save to Supabase
+      // Only save to localStorage if user is authenticated (logged in)
+      // When logged out, don't save to localStorage to avoid race conditions
       if (user?.id) {
+        // Save to localStorage as fallback for offline support
+        saveMatchState(matchState);
+
+        // Also save to Supabase
         try {
           await saveMatchStateToSupabase(matchState, user.id);
         } catch (err) {
