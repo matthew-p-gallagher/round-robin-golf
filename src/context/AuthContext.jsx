@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase.js'
+import { clearMatchState } from '../utils/match-persistence.js'
 
 const AuthContext = createContext({})
 
@@ -62,7 +63,7 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (email, password) => {
     setError(null)
     setLoading(true)
-    
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -80,26 +81,44 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     setError(null)
-    
+
     const { error } = await supabase.auth.signOut()
-    
+
+    if (error) {
+      setError(error.message)
+      throw error
+    }
+
+    // Clear local match data on logout
+    clearMatchState()
+  }
+
+  const resetPassword = async (email) => {
+    setError(null)
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin
+    })
+
     if (error) {
       setError(error.message)
       throw error
     }
   }
 
-  const resetPassword = async (email) => {
+  const updatePassword = async (newPassword) => {
     setError(null)
-    
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin
+
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword
     })
-    
+
     if (error) {
       setError(error.message)
       throw error
     }
+
+    return data
   }
 
   const value = {
@@ -110,6 +129,7 @@ export const AuthProvider = ({ children }) => {
     signIn,
     signOut,
     resetPassword,
+    updatePassword,
   }
 
   return (

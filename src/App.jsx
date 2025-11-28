@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import { useAuth } from './context/AuthContext.jsx'
 import { useMatchState } from './hooks/useMatchState.js'
 import Login from './components/auth/Login.jsx'
 import Signup from './components/auth/Signup.jsx'
 import ResetPassword from './components/auth/ResetPassword.jsx'
+import UpdatePassword from './components/auth/UpdatePassword.jsx'
 import MatchSetup from './components/MatchSetup.jsx'
 import HoleScoring from './components/HoleScoring.jsx'
 import FinalResults from './components/FinalResults.jsx'
@@ -12,20 +13,38 @@ import FinalResults from './components/FinalResults.jsx'
 function App() {
   const { user, loading, signOut } = useAuth()
   const [authView, setAuthView] = useState('login')
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false)
   
-  const { 
-    matchState, 
+  const {
+    matchState,
     loading: matchLoading,
     error: matchError,
-    startMatch, 
-    getCurrentMatchups, 
-    recordHoleResult, 
-    resetMatch, 
+    startMatch,
+    getCurrentMatchups,
+    recordHoleResult,
+    resetMatch,
     canResumeMatch,
     navigateToHole,
     updateHoleResult,
     getMatchupsForHole
   } = useMatchState(user);
+
+  // Detect password recovery mode from URL hash
+  useEffect(() => {
+    const hash = window.location.hash
+    if (hash && hash.includes('type=recovery')) {
+      setIsRecoveryMode(true)
+    }
+  }, [])
+
+  /**
+   * Handle password update completion
+   */
+  const handlePasswordUpdated = () => {
+    // Clear the hash and recovery mode
+    window.location.hash = ''
+    setIsRecoveryMode(false)
+  }
 
   /**
    * Handle starting a new match with player names
@@ -88,21 +107,32 @@ function App() {
       <div className="app">
         <main className="app-main">
           {authView === 'login' && (
-            <Login 
+            <Login
               onShowSignup={() => setAuthView('signup')}
               onShowResetPassword={() => setAuthView('reset')}
             />
           )}
           {authView === 'signup' && (
-            <Signup 
+            <Signup
               onShowLogin={() => setAuthView('login')}
             />
           )}
           {authView === 'reset' && (
-            <ResetPassword 
+            <ResetPassword
               onShowLogin={() => setAuthView('login')}
             />
           )}
+        </main>
+      </div>
+    )
+  }
+
+  // Show password update form if in recovery mode
+  if (isRecoveryMode) {
+    return (
+      <div className="app">
+        <main className="app-main">
+          <UpdatePassword onPasswordUpdated={handlePasswordUpdated} />
         </main>
       </div>
     )

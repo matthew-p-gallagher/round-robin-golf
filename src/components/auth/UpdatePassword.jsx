@@ -1,16 +1,15 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
 
-export default function Signup({ onShowLogin }) {
-  const [email, setEmail] = useState('')
+export default function UpdatePassword({ onPasswordUpdated }) {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  const { signUp } = useAuth()
+  const [success, setSuccess] = useState(false)
+  const { updatePassword } = useAuth()
 
   const validatePassword = (password) => {
     if (password.length < 6) {
@@ -21,8 +20,8 @@ export default function Signup({ onShowLogin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
-    if (!email || !password || !confirmPassword) {
+
+    if (!password || !confirmPassword) {
       setError('Please fill in all fields')
       return
     }
@@ -40,13 +39,19 @@ export default function Signup({ onShowLogin }) {
 
     setLoading(true)
     setError('')
-    setSuccess('')
 
     try {
-      await signUp(email, password)
-      setSuccess('Account created! Please check your email to verify your account.')
+      await updatePassword(password)
+      setSuccess(true)
+
+      // Auto-redirect after 2 seconds
+      setTimeout(() => {
+        if (onPasswordUpdated) {
+          onPasswordUpdated()
+        }
+      }, 2000)
     } catch (err) {
-      setError(err.message || 'Failed to create account')
+      setError(err.message || 'Failed to update password')
     } finally {
       setLoading(false)
     }
@@ -55,42 +60,18 @@ export default function Signup({ onShowLogin }) {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1 className="auth-title">Create Account</h1>
-        <p className="auth-subtitle">Sign up to start tracking your golf matches</p>
-        
+        <h1 className="auth-title">Update Password</h1>
+        <p className="auth-subtitle">Choose a new password for your account</p>
+
         {success ? (
           <div className="auth-success">
-            <p>{success}</p>
-            <button 
-              type="button" 
-              className="auth-button primary"
-              onClick={onShowLogin}
-            >
-              Back to Sign In
-            </button>
+            <p>Password updated successfully! Redirecting to your matches...</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">
-              <label htmlFor="email" className="form-label">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="form-input"
-                placeholder="Enter your email"
-                disabled={loading}
-                autoComplete="email"
-                required
-              />
-            </div>
-
-            <div className="form-group">
               <label htmlFor="password" className="form-label">
-                Password
+                New Password
               </label>
               <div className="password-input-wrapper">
                 <input
@@ -99,9 +80,10 @@ export default function Signup({ onShowLogin }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="form-input"
-                  placeholder="Create a password (min 6 characters)"
+                  placeholder="Enter new password (min 6 characters)"
                   disabled={loading}
                   autoComplete="new-password"
+                  autoFocus
                   required
                 />
                 {password && (
@@ -120,7 +102,7 @@ export default function Signup({ onShowLogin }) {
 
             <div className="form-group">
               <label htmlFor="confirmPassword" className="form-label">
-                Confirm Password
+                Confirm New Password
               </label>
               <div className="password-input-wrapper">
                 <input
@@ -129,7 +111,7 @@ export default function Signup({ onShowLogin }) {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="form-input"
-                  placeholder="Confirm your password"
+                  placeholder="Confirm new password"
                   disabled={loading}
                   autoComplete="new-password"
                   required
@@ -150,29 +132,15 @@ export default function Signup({ onShowLogin }) {
 
             {error && <div className="auth-error">{error}</div>}
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="auth-button primary"
               disabled={loading}
             >
-              {loading ? 'Creating account...' : 'Create Account'}
+              {loading ? 'Updating password...' : 'Update Password'}
             </button>
           </form>
         )}
-
-        <div className="auth-links">
-          <div className="auth-divider">
-            <span>Already have an account?</span>
-            <button 
-              type="button" 
-              className="link-button"
-              onClick={onShowLogin}
-              disabled={loading}
-            >
-              Sign in
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   )
