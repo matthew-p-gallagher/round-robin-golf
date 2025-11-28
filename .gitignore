@@ -11,6 +11,12 @@ node_modules
 dist
 dist-ssr
 *.local
+.env.test
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
 
 # Editor directories and files
 .vscode/*
@@ -28,4 +34,5 @@ commit-msg.txt
 .claude/
 CLAUDE.md
 coverage/
-PROJECT_STATUS.md
+TODO.md
+ISSUES.md

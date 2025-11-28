@@ -575,7 +575,6 @@
   max-width: 200px;
   height: 8px;
   background-color: var(--color-border);
-  border-radius: 4px;
   overflow: visible;
   position: relative;
 }

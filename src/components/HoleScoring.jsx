@@ -203,7 +203,7 @@ try {
             <div className="progress-bar">
               <div 
                 className="progress-fill" 
-                style={{ width: `${(currentHole / 18) * 100}%` }}
+                style={{ width: `${((currentHole - 1) / 18) * 100}%` }}
               >
                 <img 
                   src="./flag.png" 
