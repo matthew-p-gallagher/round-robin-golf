@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
+import AuthLayout from '../common/AuthLayout.jsx'
 import PasswordInput from '../common/PasswordInput.jsx'
 
 export default function UpdatePassword({ onPasswordUpdated }) {
@@ -57,12 +58,11 @@ export default function UpdatePassword({ onPasswordUpdated }) {
   }
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h1 className="auth-title">Update Password</h1>
-        <p className="auth-subtitle">Choose a new password for your account</p>
-
-        {success ? (
+    <AuthLayout
+      title="Update Password"
+      subtitle="Choose a new password for your account"
+    >
+      {success ? (
           <div className="auth-success">
             <p>Password updated successfully! Redirecting to your matches...</p>
           </div>
@@ -102,7 +102,6 @@ export default function UpdatePassword({ onPasswordUpdated }) {
             </button>
           </form>
         )}
-      </div>
-    </div>
+    </AuthLayout>
   )
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
+import AuthLayout from '../common/AuthLayout.jsx'
 import EmailInput from '../common/EmailInput.jsx'
 import PasswordInput from '../common/PasswordInput.jsx'
 
@@ -53,12 +54,11 @@ export default function Signup({ onShowLogin }) {
   }
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h1 className="auth-title">Create Account</h1>
-        <p className="auth-subtitle">Sign up to start tracking your golf matches</p>
-        
-        {success ? (
+    <AuthLayout
+      title="Create Account"
+      subtitle="Sign up to start tracking your golf matches"
+    >
+      {success ? (
           <div className="auth-success">
             <p>{success}</p>
             <button 
@@ -128,7 +128,6 @@ export default function Signup({ onShowLogin }) {
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </AuthLayout>
   )
 }

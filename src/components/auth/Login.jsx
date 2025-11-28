@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
+import AuthLayout from '../common/AuthLayout.jsx'
 import EmailInput from '../common/EmailInput.jsx'
 import PasswordInput from '../common/PasswordInput.jsx'
 
@@ -31,12 +32,11 @@ export default function Login({ onShowSignup, onShowResetPassword }) {
   }
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h1 className="auth-title">Welcome Back</h1>
-        <p className="auth-subtitle">Sign in to continue your golf matches</p>
-        
-        <form onSubmit={handleSubmit} className="auth-form">
+    <AuthLayout
+      title="Welcome Back"
+      subtitle="Sign in to continue your golf matches"
+    >
+      <form onSubmit={handleSubmit} className="auth-form">
           <EmailInput
             id="email"
             label="Email"
@@ -67,31 +67,30 @@ export default function Login({ onShowSignup, onShowResetPassword }) {
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
-        </form>
+      </form>
 
-        <div className="auth-links">
-          <button 
-            type="button" 
+      <div className="auth-links">
+        <button
+          type="button"
+          className="link-button"
+          onClick={onShowResetPassword}
+          disabled={loading}
+        >
+          Forgot your password?
+        </button>
+
+        <div className="auth-divider">
+          <span>Don't have an account?</span>
+          <button
+            type="button"
             className="link-button"
-            onClick={onShowResetPassword}
+            onClick={onShowSignup}
             disabled={loading}
           >
-            Forgot your password?
+            Sign up
           </button>
-          
-          <div className="auth-divider">
-            <span>Don't have an account?</span>
-            <button 
-              type="button" 
-              className="link-button"
-              onClick={onShowSignup}
-              disabled={loading}
-            >
-              Sign up
-            </button>
-          </div>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   )
 }

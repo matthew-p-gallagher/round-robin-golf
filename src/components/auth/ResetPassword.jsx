@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
+import AuthLayout from '../common/AuthLayout.jsx'
 import EmailInput from '../common/EmailInput.jsx'
 
 export default function ResetPassword({ onShowLogin }) {
@@ -32,12 +33,11 @@ export default function ResetPassword({ onShowLogin }) {
   }
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h1 className="auth-title">Reset Password</h1>
-        <p className="auth-subtitle">Enter your email to receive a password reset link</p>
-        
-        {success ? (
+    <AuthLayout
+      title="Reset Password"
+      subtitle="Enter your email to receive a password reset link"
+    >
+      {success ? (
           <div className="auth-success">
             <p>{success}</p>
             <button 
@@ -82,7 +82,6 @@ export default function ResetPassword({ onShowLogin }) {
             Back to Sign In
           </button>
         </div>
-      </div>
-    </div>
+    </AuthLayout>
   )
 }
