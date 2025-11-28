@@ -2,13 +2,14 @@
 
 /* Header Styles */
 .app-header {
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--color-primary);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   padding: var(--spacing-sm) 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .header-content {
-  max-width: 1200px;
+  max-width: 480px;
   margin: 0 auto;
   padding: 0 var(--spacing-md);
   display: flex;
@@ -18,32 +19,48 @@
 
 .header-content h1 {
   margin: 0;
-  color: var(--color-primary);
-  font-size: 1.5rem;
+  color: var(--color-secondary);
+  font-size: 1.25rem;
   font-weight: 700;
+  display: none;
 }
 
 .user-info {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
   gap: var(--spacing-sm);
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .sign-out-button {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  background: var(--color-surface);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--border-radius);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 36px;
 }
 
 .sign-out-button:hover {
-  background: var(--color-background);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+@media (min-width: 768px) {
+  .header-content h1 {
+    display: block;
+  }
+
+  .user-info {
+    width: auto;
+  }
 }
 
 /* Authentication Styles */
