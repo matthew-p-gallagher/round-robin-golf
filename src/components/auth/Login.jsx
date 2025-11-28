@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import AuthLayout from '../common/AuthLayout.jsx'
 import EmailInput from '../common/EmailInput.jsx'
 import PasswordInput from '../common/PasswordInput.jsx'
+import ErrorMessage from '../common/ErrorMessage.jsx'
 
 export default function Login({ onShowSignup, onShowResetPassword }) {
   const [email, setEmail] = useState('')
@@ -58,7 +59,7 @@ export default function Login({ onShowSignup, onShowResetPassword }) {
             required
           />
 
-          {error && <div className="auth-error">{error}</div>}
+          <ErrorMessage error={error} className="auth-error" />
 
           <button
             type="submit"

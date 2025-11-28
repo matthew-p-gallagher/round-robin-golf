@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import AuthLayout from '../common/AuthLayout.jsx'
 import EmailInput from '../common/EmailInput.jsx'
+import ErrorMessage from '../common/ErrorMessage.jsx'
 
 export default function ResetPassword({ onShowLogin }) {
   const [email, setEmail] = useState('')
@@ -60,7 +61,7 @@ export default function ResetPassword({ onShowLogin }) {
               required
             />
 
-            {error && <div className="auth-error">{error}</div>}
+            <ErrorMessage error={error} className="auth-error" />
 
             <button 
               type="submit" 

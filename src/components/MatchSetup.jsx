@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import ErrorMessage from './common/ErrorMessage.jsx';
 
 /**
  * MatchSetup component for entering 4 player names and starting a match
@@ -196,17 +197,9 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResumeMatch }) {
                 />
               </div>
             ))}
-            
-            {errors.length > 0 && (
-              <div className="form-errors">
-                {errors.map((error, index) => (
-                  <div key={index} className="form-error">
-                    {error}
-                  </div>
-                ))}
-              </div>
-            )}
-            
+
+            <ErrorMessage errors={errors} className="form-errors" />
+
             <div className="button-group">
               <button
                 type="button"

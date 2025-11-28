@@ -9,6 +9,7 @@ import UpdatePassword from './components/auth/UpdatePassword.jsx'
 import MatchSetup from './components/MatchSetup.jsx'
 import HoleScoring from './components/HoleScoring.jsx'
 import FinalResults from './components/FinalResults.jsx'
+import ErrorMessage from './components/common/ErrorMessage.jsx'
 
 function App() {
   const { user, loading, signOut } = useAuth()
@@ -153,12 +154,8 @@ function App() {
       </header>
       
       <main className="app-main">
-        {matchError && (
-          <div className="error-message">
-            <p>Error: {matchError}</p>
-          </div>
-        )}
-        
+        <ErrorMessage error={matchError} />
+
         {matchState.phase === 'setup' && (
           <MatchSetup 
             onStartMatch={handleStartMatch}

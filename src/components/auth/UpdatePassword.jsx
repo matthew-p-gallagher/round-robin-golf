@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import AuthLayout from '../common/AuthLayout.jsx'
 import PasswordInput from '../common/PasswordInput.jsx'
+import ErrorMessage from '../common/ErrorMessage.jsx'
 
 export default function UpdatePassword({ onPasswordUpdated }) {
   const [password, setPassword] = useState('')
@@ -91,7 +92,7 @@ export default function UpdatePassword({ onPasswordUpdated }) {
               required
             />
 
-            {error && <div className="auth-error">{error}</div>}
+            <ErrorMessage error={error} className="auth-error" />
 
             <button
               type="submit"
