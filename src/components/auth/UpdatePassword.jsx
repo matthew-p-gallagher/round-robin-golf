@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
+import PasswordInput from '../common/PasswordInput.jsx'
 
 export default function UpdatePassword({ onPasswordUpdated }) {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -69,66 +68,28 @@ export default function UpdatePassword({ onPasswordUpdated }) {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="auth-form">
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">
-                New Password
-              </label>
-              <div className="password-input-wrapper">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="form-input"
-                  placeholder="Enter new password (min 6 characters)"
-                  disabled={loading}
-                  autoComplete="new-password"
-                  autoFocus
-                  required
-                />
-                {password && (
-                  <button
-                    type="button"
-                    className="password-toggle"
-                    onClick={() => setShowPassword(!showPassword)}
-                    disabled={loading}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? "Hide" : "Show"}
-                  </button>
-                )}
-              </div>
-            </div>
+            <PasswordInput
+              id="password"
+              label="New Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter new password (min 6 characters)"
+              disabled={loading}
+              autoComplete="new-password"
+              autoFocus
+              required
+            />
 
-            <div className="form-group">
-              <label htmlFor="confirmPassword" className="form-label">
-                Confirm New Password
-              </label>
-              <div className="password-input-wrapper">
-                <input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="form-input"
-                  placeholder="Confirm new password"
-                  disabled={loading}
-                  autoComplete="new-password"
-                  required
-                />
-                {confirmPassword && (
-                  <button
-                    type="button"
-                    className="password-toggle"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    disabled={loading}
-                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                  >
-                    {showConfirmPassword ? "Hide" : "Show"}
-                  </button>
-                )}
-              </div>
-            </div>
+            <PasswordInput
+              id="confirmPassword"
+              label="Confirm New Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm new password"
+              disabled={loading}
+              autoComplete="new-password"
+              required
+            />
 
             {error && <div className="auth-error">{error}</div>}
 
