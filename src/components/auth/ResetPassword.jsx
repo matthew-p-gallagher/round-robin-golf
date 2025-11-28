@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
+import EmailInput from '../common/EmailInput.jsx'
 
 export default function ResetPassword({ onShowLogin }) {
   const [email, setEmail] = useState('')
@@ -49,22 +50,15 @@ export default function ResetPassword({ onShowLogin }) {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="auth-form">
-            <div className="form-group">
-              <label htmlFor="email" className="form-label">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="form-input"
-                placeholder="Enter your email address"
-                disabled={loading}
-                autoComplete="email"
-                required
-              />
-            </div>
+            <EmailInput
+              id="email"
+              label="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email address"
+              disabled={loading}
+              required
+            />
 
             {error && <div className="auth-error">{error}</div>}
 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
+import EmailInput from '../common/EmailInput.jsx'
 import PasswordInput from '../common/PasswordInput.jsx'
 
 export default function Login({ onShowSignup, onShowResetPassword }) {
@@ -36,22 +37,15 @@ export default function Login({ onShowSignup, onShowResetPassword }) {
         <p className="auth-subtitle">Sign in to continue your golf matches</p>
         
         <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="form-input"
-              placeholder="Enter your email"
-              disabled={loading}
-              autoComplete="email"
-              required
-            />
-          </div>
+          <EmailInput
+            id="email"
+            label="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            disabled={loading}
+            required
+          />
 
           <PasswordInput
             id="password"

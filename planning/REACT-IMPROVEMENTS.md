@@ -13,14 +13,14 @@ Low risk, high value. Eliminates ~282 lines of duplicate code.
 ### 1.1 Create Reusable Form Components
 
 #### 1.1.1 PasswordInput Component
-- [ ] Create `src/components/common/PasswordInput.jsx`
-- [ ] Add props: `id`, `label`, `value`, `onChange`, `placeholder`, `disabled`, `autoComplete`, `autoFocus`, `required`
-- [ ] Implement internal state for show/hide toggle
-- [ ] Refactor Login.jsx to use PasswordInput
-- [ ] Refactor Signup.jsx to use PasswordInput (2 instances)
-- [ ] Refactor UpdatePassword.jsx to use PasswordInput (2 instances)
-- [ ] Write unit tests for PasswordInput
-- [ ] Verify all auth flows work correctly
+- [x] Create `src/components/common/PasswordInput.jsx`
+- [x] Add props: `id`, `label`, `value`, `onChange`, `placeholder`, `disabled`, `autoComplete`, `autoFocus`, `required`
+- [x] Implement internal state for show/hide toggle
+- [x] Refactor Login.jsx to use PasswordInput
+- [x] Refactor Signup.jsx to use PasswordInput (2 instances)
+- [x] Refactor UpdatePassword.jsx to use PasswordInput (2 instances)
+- [x] Write unit tests for PasswordInput
+- [x] Verify all auth flows work correctly
 
 **Impact**: Eliminates ~115 lines of duplicate code (5 instances)
 **New file**: `src/components/common/PasswordInput.jsx` (~45 lines)
