@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import AuthLayout from '../common/AuthLayout.jsx'
 import EmailInput from '../common/EmailInput.jsx'
 import ErrorMessage from '../common/ErrorMessage.jsx'
+import SuccessMessage from '../common/SuccessMessage.jsx'
 
 export default function ResetPassword({ onShowLogin }) {
   const [email, setEmail] = useState('')
@@ -39,17 +40,12 @@ export default function ResetPassword({ onShowLogin }) {
       subtitle="Enter your email to receive a password reset link"
     >
       {success ? (
-          <div className="auth-success">
-            <p>{success}</p>
-            <button 
-              type="button" 
-              className="auth-button primary"
-              onClick={onShowLogin}
-            >
-              Back to Sign In
-            </button>
-          </div>
-        ) : (
+        <SuccessMessage
+          message={success}
+          action="Back to Sign In"
+          onAction={onShowLogin}
+        />
+      ) : (
           <form onSubmit={handleSubmit} className="auth-form">
             <EmailInput
               id="email"

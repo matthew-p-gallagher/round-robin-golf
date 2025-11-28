@@ -4,6 +4,7 @@ import AuthLayout from '../common/AuthLayout.jsx'
 import EmailInput from '../common/EmailInput.jsx'
 import PasswordInput from '../common/PasswordInput.jsx'
 import ErrorMessage from '../common/ErrorMessage.jsx'
+import SuccessMessage from '../common/SuccessMessage.jsx'
 
 export default function Signup({ onShowLogin }) {
   const [email, setEmail] = useState('')
@@ -60,17 +61,12 @@ export default function Signup({ onShowLogin }) {
       subtitle="Sign up to start tracking your golf matches"
     >
       {success ? (
-          <div className="auth-success">
-            <p>{success}</p>
-            <button 
-              type="button" 
-              className="auth-button primary"
-              onClick={onShowLogin}
-            >
-              Back to Sign In
-            </button>
-          </div>
-        ) : (
+        <SuccessMessage
+          message={success}
+          action="Back to Sign In"
+          onAction={onShowLogin}
+        />
+      ) : (
           <form onSubmit={handleSubmit} className="auth-form">
             <EmailInput
               id="email"

@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import AuthLayout from '../common/AuthLayout.jsx'
 import PasswordInput from '../common/PasswordInput.jsx'
 import ErrorMessage from '../common/ErrorMessage.jsx'
+import SuccessMessage from '../common/SuccessMessage.jsx'
 
 export default function UpdatePassword({ onPasswordUpdated }) {
   const [password, setPassword] = useState('')
@@ -64,10 +65,8 @@ export default function UpdatePassword({ onPasswordUpdated }) {
       subtitle="Choose a new password for your account"
     >
       {success ? (
-          <div className="auth-success">
-            <p>Password updated successfully! Redirecting to your matches...</p>
-          </div>
-        ) : (
+        <SuccessMessage message="Password updated successfully! Redirecting to your matches..." />
+      ) : (
           <form onSubmit={handleSubmit} className="auth-form">
             <PasswordInput
               id="password"
