@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PointsTable from './PointsTable.jsx';
+import PageLayout from './common/PageLayout.jsx';
 
 /**
  * HoleScoring component for recording matchup results on each hole
@@ -171,8 +172,7 @@ try {
 
 
   return (
-    <div className="screen">
-      <div className="container">
+    <PageLayout>
         {/* Hole Header with Navigation */}
         <div className="hole-header">
           <div className="hole-navigation">
@@ -264,10 +264,7 @@ try {
             showWinnerHighlight={false}
           />
         </div>
-
-        
-      </div>
-    </div>
+    </PageLayout>
   );
 }
 

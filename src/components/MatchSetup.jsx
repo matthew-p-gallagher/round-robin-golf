@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ErrorMessage from './common/ErrorMessage.jsx';
 import LoadingSpinner from './common/LoadingSpinner.jsx';
+import PageLayout from './common/PageLayout.jsx';
 
 /**
  * MatchSetup component for entering 4 player names and starting a match
@@ -142,17 +143,14 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResumeMatch }) {
 
   if (checkingResume) {
     return (
-      <div className="screen">
-        <div className="container">
-          <LoadingSpinner message="Checking for saved matches..." />
-        </div>
-      </div>
+      <PageLayout>
+        <LoadingSpinner message="Checking for saved matches..." />
+      </PageLayout>
     );
   }
 
   return (
-    <div className="screen">
-      <div className="container">
+    <PageLayout>
         {canResume && (
           <div className="card resume-card">
             <div className="card-header">
@@ -218,8 +216,7 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResumeMatch }) {
             </div>
           </form>
         </div>
-      </div>
-    </div>
+    </PageLayout>
   );
 }
 

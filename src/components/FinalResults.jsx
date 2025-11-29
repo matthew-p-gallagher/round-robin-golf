@@ -1,4 +1,5 @@
 import PointsTable from './PointsTable.jsx';
+import PageLayout from './common/PageLayout.jsx';
 
 /**
  * FinalResults component for displaying the final match results
@@ -8,8 +9,7 @@ import PointsTable from './PointsTable.jsx';
  */
 function FinalResults({ players, onNewMatch }) {
   return (
-    <div className="screen">
-      <div className="container">
+    <PageLayout>
         <div className="final-results-header">
           <h2 className="final-results-title">Match Complete!</h2>
           <p className="final-results-subtitle">Final Results</p>
@@ -34,8 +34,7 @@ function FinalResults({ players, onNewMatch }) {
             Start New Match
           </button>
         </div>
-      </div>
-    </div>
+    </PageLayout>
   );
 }
 
