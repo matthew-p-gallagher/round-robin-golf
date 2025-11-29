@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import ErrorMessage from './common/ErrorMessage.jsx';
+import LoadingSpinner from './common/LoadingSpinner.jsx';
 
 /**
  * MatchSetup component for entering 4 player names and starting a match
@@ -143,9 +144,7 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResumeMatch }) {
     return (
       <div className="screen">
         <div className="container">
-          <div className="loading-container">
-            <p>Checking for saved matches...</p>
-          </div>
+          <LoadingSpinner message="Checking for saved matches..." />
         </div>
       </div>
     );

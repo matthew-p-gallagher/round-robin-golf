@@ -10,6 +10,7 @@ import MatchSetup from './components/MatchSetup.jsx'
 import HoleScoring from './components/HoleScoring.jsx'
 import FinalResults from './components/FinalResults.jsx'
 import ErrorMessage from './components/common/ErrorMessage.jsx'
+import LoadingSpinner from './components/common/LoadingSpinner.jsx'
 
 function App() {
   const { user, loading, signOut } = useAuth()
@@ -94,10 +95,7 @@ function App() {
     return (
       <div className="app">
         <main className="app-main">
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Loading...</p>
-          </div>
+          <LoadingSpinner />
         </main>
       </div>
     )
