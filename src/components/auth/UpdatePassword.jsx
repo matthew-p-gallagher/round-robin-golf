@@ -4,6 +4,7 @@ import AuthLayout from '../common/AuthLayout.jsx'
 import PasswordInput from '../common/PasswordInput.jsx'
 import ErrorMessage from '../common/ErrorMessage.jsx'
 import SuccessMessage from '../common/SuccessMessage.jsx'
+import { validatePassword } from '../../utils/validation.js'
 
 export default function UpdatePassword({ onPasswordUpdated }) {
   const [password, setPassword] = useState('')
@@ -12,13 +13,6 @@ export default function UpdatePassword({ onPasswordUpdated }) {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const { updatePassword } = useAuth()
-
-  const validatePassword = (password) => {
-    if (password.length < 6) {
-      return 'Password must be at least 6 characters long'
-    }
-    return null
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()

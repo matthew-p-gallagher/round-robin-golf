@@ -5,6 +5,7 @@ import EmailInput from '../common/EmailInput.jsx'
 import PasswordInput from '../common/PasswordInput.jsx'
 import ErrorMessage from '../common/ErrorMessage.jsx'
 import SuccessMessage from '../common/SuccessMessage.jsx'
+import { validatePassword } from '../../utils/validation.js'
 
 export default function Signup({ onShowLogin }) {
   const [email, setEmail] = useState('')
@@ -14,13 +15,6 @@ export default function Signup({ onShowLogin }) {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const { signUp } = useAuth()
-
-  const validatePassword = (password) => {
-    if (password.length < 6) {
-      return 'Password must be at least 6 characters long'
-    }
-    return null
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
