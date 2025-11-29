@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import ErrorMessage from './common/ErrorMessage.jsx';
 import LoadingSpinner from './common/LoadingSpinner.jsx';
 import PageLayout from './common/PageLayout.jsx';
+import Card from './common/Card.jsx';
 
 /**
  * MatchSetup component for entering 4 player names and starting a match
@@ -152,11 +153,11 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResumeMatch }) {
   return (
     <PageLayout>
         {canResume && (
-          <div className="card resume-card">
-            <div className="card-header">
-              <h2 className="card-title">Resume Match</h2>
-              <p>You have a saved match in progress. Would you like to continue where you left off?</p>
-            </div>
+          <Card
+            title="Resume Match"
+            description="You have a saved match in progress. Would you like to continue where you left off?"
+            className="resume-card"
+          >
             <div className="button-group">
               <button
                 type="button"
@@ -166,15 +167,13 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResumeMatch }) {
                 Resume Saved Match
               </button>
             </div>
-          </div>
+          </Card>
         )}
-        
-        <div className="card">
-          <div className="card-header">
-            <h2 className="card-title">{canResume ? 'Or Start New Match' : 'Setup New Match'}</h2>
-            <p>Enter the names of all 4 players to begin your round robin golf match.</p>
-          </div>
-          
+
+        <Card
+          title={canResume ? 'Or Start New Match' : 'Setup New Match'}
+          description="Enter the names of all 4 players to begin your round robin golf match."
+        >
           <form onSubmit={handleSubmit} className="match-setup-form" role="form">
             {playerNames.map((name, index) => (
               <div key={index} className="form-group">
@@ -215,7 +214,7 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResumeMatch }) {
               </button>
             </div>
           </form>
-        </div>
+        </Card>
     </PageLayout>
   );
 }
