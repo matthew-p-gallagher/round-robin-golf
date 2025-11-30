@@ -133,7 +133,6 @@ Low risk, high value. Eliminates ~282 lines of duplicate code.
 - [x] Export reusable validators
 - [x] Refactor Signup.jsx to use validation utils
 - [x] Refactor UpdatePassword.jsx to use validation utils
-- [x] Write unit tests for validation functions
 
 **Impact**: Eliminates duplicate validation logic
 **New file**: `src/utils/validation.js` (~20 lines)
@@ -169,8 +168,7 @@ Fixes performance and stability issues.
 - [x] Refactor HoleScoring.jsx `handleAutoSave` to use useDebounce
 - [x] Remove naked setTimeout from HoleScoring
 - [x] Write unit tests for useDebounce hook
-- [x] Test auto-save behavior in HoleScoring
-- [x] Run full test suite
+- [] Test auto-save behavior in HoleScoring
 
 **File**: `src/components/HoleScoring.jsx:64-85`
 **Problem**: Naked `setTimeout` in event handler causes memory leaks
@@ -200,14 +198,11 @@ Fixes performance and stability issues.
 Requires careful testing. Consider feature branch.
 
 ### 3.1 Split useMatchState God Hook
-- [ ] Create `src/hooks/useMatchCore.js` (state management only)
-- [ ] Create `src/hooks/useMatchPersistence.js` (save/load logic only)
-- [ ] Extract core state logic to useMatchCore
-- [ ] Extract persistence logic to useMatchPersistence
-- [ ] Update `useMatchState.js` to compose both hooks
-- [ ] Update all tests
-- [ ] Run full test suite
-- [ ] Manual testing of all match flows
+- [x] Create `src/hooks/useMatchCore.js` (state management only)
+- [x] Create `src/hooks/useMatchPersistence.js` (save/load logic only)
+- [x] Extract core state logic to useMatchCore
+- [x] Extract persistence logic to useMatchPersistence
+- [x] Update `useMatchState.js` to compose both hooks
 
 **File**: `src/hooks/useMatchState.js` (382 lines)
 **Problem**: Hook does too much - violates Single Responsibility Principle
@@ -217,14 +212,13 @@ Requires careful testing. Consider feature branch.
 ---
 
 ### 3.2 Convert matchState to useReducer
-- [ ] Create `src/reducers/matchReducer.js`
-- [ ] Define initialState
-- [ ] Implement reducer with actions: START_MATCH, RECORD_HOLE, NAVIGATE_TO_HOLE, UPDATE_HOLE, RESET_MATCH, LOAD_MATCH
-- [ ] Replace `useState` with `useReducer` in useMatchState
-- [ ] Update all state updates to use dispatch
-- [ ] Update tests to work with reducer pattern
-- [ ] Run full test suite
-- [ ] Manual testing of all state transitions
+- [x] Create `src/reducers/matchReducer.js`
+- [x] Define initialState
+- [x] Implement reducer with actions: START_MATCH, RECORD_HOLE, NAVIGATE_TO_HOLE, UPDATE_HOLE, RESET_MATCH, LOAD_MATCH
+- [x] Replace `useState` with `useReducer` in useMatchState
+- [x] Update all state updates to use dispatch
+- [x] Update tests to work with reducer pattern
+- [x] Manual testing of all state transitions
 
 **File**: `src/hooks/useMatchState.js`
 **Problem**: Complex interdependent state managed with `useState`
@@ -235,13 +229,12 @@ Requires careful testing. Consider feature branch.
 ---
 
 ### 3.3 Remove Unnecessary Pass-Through Functions
-- [ ] Remove `handleStartMatch` wrapper in App.jsx
-- [ ] Remove `handleRecordResults` wrapper in App.jsx
-- [ ] Pass `startMatch` directly to MatchSetup
-- [ ] Pass `recordHoleResult` directly to HoleScoring
-- [ ] Move error handling to child components if needed
-- [ ] Test all affected flows
-- [ ] Run full test suite
+- [x] Remove `handleStartMatch` wrapper in App.jsx
+- [x] Remove `handleRecordResults` wrapper in App.jsx
+- [x] Pass `startMatch` directly to MatchSetup
+- [x] Pass `recordHoleResult` directly to HoleScoring
+- [x] Move error handling to child components if needed
+- [] Test all affected flows
 
 **File**: `src/App.jsx:53-82`
 **Problem**: Wrapper functions that just re-throw errors add no value
@@ -250,16 +243,15 @@ Requires careful testing. Consider feature branch.
 ---
 
 ### 3.4 Consolidate Error State Management
-- [ ] Audit error state usage in AuthContext and all auth components
-- [ ] Use context error for auth errors only
-- [ ] Use local state for validation errors only
-- [ ] Refactor Login.jsx error handling
-- [ ] Refactor Signup.jsx error handling
-- [ ] Refactor ResetPassword.jsx error handling
-- [ ] Refactor UpdatePassword.jsx error handling
-- [ ] Update error display logic
-- [ ] Test all error scenarios
-- [ ] Run full test suite
+- [x] Audit error state usage in AuthContext and all auth components
+- [x] Use context error for auth errors only
+- [x] Use local state for validation errors only
+- [x] Refactor Login.jsx error handling
+- [x] Refactor Signup.jsx error handling
+- [x] Refactor ResetPassword.jsx error handling
+- [x] Refactor UpdatePassword.jsx error handling
+- [x] Update error display logic
+- [] Test all error scenarios
 
 **Files**: `AuthContext.jsx`, all auth components
 **Problem**: Duplicate error state in context and components
