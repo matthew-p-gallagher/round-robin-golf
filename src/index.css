@@ -185,3 +185,94 @@ input:focus, select:focus, textarea:focus {
     max-width: 800px;
   }
 }
+
+/* Error Boundary Styles */
+.error-boundary {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  background-color: var(--color-surface);
+}
+
+.error-boundary-content {
+  max-width: 600px;
+  width: 100%;
+  background: white;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-xl);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.error-boundary-content h1 {
+  color: var(--color-error);
+  margin-bottom: var(--spacing-md);
+}
+
+.error-message {
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-lg);
+}
+
+.error-details {
+  text-align: left;
+  margin: var(--spacing-lg) 0;
+  padding: var(--spacing-md);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+}
+
+.error-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-text);
+  padding: var(--spacing-sm);
+  user-select: none;
+}
+
+.error-details summary:hover {
+  color: var(--color-primary);
+}
+
+.error-text {
+  color: var(--color-error);
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  margin: var(--spacing-md) 0;
+  padding: var(--spacing-sm);
+  background-color: #fff;
+  border-left: 3px solid var(--color-error);
+}
+
+.error-stack {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin-top: var(--spacing-sm);
+}
+
+.error-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.error-actions .btn {
+  min-width: 140px;
+}
+
+.btn-secondary {
+  background-color: var(--color-text-light);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-text);
+}

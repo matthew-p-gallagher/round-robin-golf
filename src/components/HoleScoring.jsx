@@ -30,8 +30,9 @@ function HoleScoring({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState(null); // null, 'saving', 'saved'
 
-  // Hook for safe timeout handling with automatic cleanup
-  const setTimeoutSafe = useTimeout();
+  // Hooks for safe timeout handling with automatic cleanup
+  const setAutoAdvanceTimeout = useTimeout();
+  const setClearStatusTimeout = useTimeout();
 
   // Reset results when hole changes or matchups change
   useEffect(() => {
@@ -72,7 +73,7 @@ setAutoSaveStatus('saving');
 try {
   if (currentHole === maxHoleReached) {
     // Recording new results - add delay before auto-advancing
-    setTimeoutSafe(async () => {
+    setAutoAdvanceTimeout(async () => {
       await onRecordResults(results);
     }, 800);
   } else {
@@ -82,7 +83,7 @@ try {
 
   setAutoSaveStatus('saved');
   // Clear the saved status after 2 seconds
-  setTimeoutSafe(() => setAutoSaveStatus(null), 2000);
+  setClearStatusTimeout(() => setAutoSaveStatus(null), 2000);
 } catch (error) {
   console.error('Error auto-saving results:', error);
   setAutoSaveStatus(null);
