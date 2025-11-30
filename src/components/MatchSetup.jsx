@@ -8,10 +8,9 @@ import Card from './common/Card.jsx';
  * MatchSetup component for entering 4 player names and starting a match
  * @param {Object} props
  * @param {Function} props.onStartMatch - Callback function to start the match with player names
- * @param {Function} props.onResumeMatch - Callback function to resume a saved match
  * @param {Function} props.canResumeMatch - Async function to check if there is a saved match that can be resumed
  */
-function MatchSetup({ onStartMatch, onResumeMatch, canResumeMatch }) {
+function MatchSetup({ onStartMatch, canResumeMatch }) {
   const [playerNames, setPlayerNames] = useState(['', '', '', '']);
   const [errors, setErrors] = useState([]);
   const [duplicateIndices, setDuplicateIndices] = useState([]);
@@ -133,15 +132,6 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResumeMatch }) {
     setDuplicateIndices([]);
   };
 
-  /**
-   * Handle resuming a saved match
-   */
-  const handleResumeMatch = () => {
-    if (onResumeMatch) {
-      onResumeMatch();
-    }
-  };
-
   if (checkingResume) {
     return (
       <PageLayout>
@@ -161,7 +151,10 @@ function MatchSetup({ onStartMatch, onResumeMatch, canResumeMatch }) {
             <div className="button-group">
               <button
                 type="button"
-                onClick={handleResumeMatch}
+                onClick={() => {
+                  // Match state is already loaded by persistence layer
+                  // No action needed - saved data is already displayed
+                }}
                 className="resume-match-button"
               >
                 Resume Saved Match
