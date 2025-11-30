@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PointsTable from './PointsTable.jsx';
 import PageLayout from './common/PageLayout.jsx';
+import { useTimeout } from '../hooks/useDebounce.js';
 
 /**
  * HoleScoring component for recording matchup results on each hole
@@ -28,6 +29,9 @@ function HoleScoring({
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState(null); // null, 'saving', 'saved'
+
+  // Hook for safe timeout handling with automatic cleanup
+  const setTimeoutSafe = useTimeout();
 
   // Reset results when hole changes or matchups change
   useEffect(() => {
@@ -68,17 +72,17 @@ setAutoSaveStatus('saving');
 try {
   if (currentHole === maxHoleReached) {
     // Recording new results - add delay before auto-advancing
-    setTimeout(async () => {
+    setTimeoutSafe(async () => {
       await onRecordResults(results);
-    }, 800); // 1 second delay
+    }, 800);
   } else {
     // Updating existing results
     await onUpdateHoleResult(currentHole, results);
   }
-  
+
   setAutoSaveStatus('saved');
   // Clear the saved status after 2 seconds
-  setTimeout(() => setAutoSaveStatus(null), 2000);
+  setTimeoutSafe(() => setAutoSaveStatus(null), 2000);
 } catch (error) {
   console.error('Error auto-saving results:', error);
   setAutoSaveStatus(null);
