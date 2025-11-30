@@ -103,7 +103,7 @@ describe('useMatchState Persistence Integration', () => {
     expect(savedData.holeResults).toHaveLength(1);
   });
 
-  it('should clear localStorage when match is reset', () => {
+  it('should clear localStorage when match is reset', async () => {
     const savedState = {
       players: [
         { name: 'Alice', points: 6, wins: 2, draws: 0, losses: 0 },
@@ -123,8 +123,8 @@ describe('useMatchState Persistence Integration', () => {
 
     expect(result.current.matchState.phase).toBe('scoring');
 
-    act(() => {
-      result.current.resetMatch();
+    await act(async () => {
+      await result.current.resetMatch();
     });
 
     expect(localStorageMock.removeItem).toHaveBeenCalledWith('golf-match-state');
@@ -166,6 +166,7 @@ describe('useMatchState Persistence Integration', () => {
   });
 
   it('should persist match through completion', () => {
+    vi.useFakeTimers();
     localStorageMock.getItem.mockReturnValue(null);
 
     const { result } = renderHook(() => useMatchState());
@@ -191,11 +192,18 @@ describe('useMatchState Persistence Integration', () => {
     expect(result.current.matchState.phase).toBe('complete');
     expect(result.current.matchState.currentHole).toBe(18);
 
+    // Advance timers to trigger debounced save
+    act(() => {
+      vi.advanceTimersByTime(800);
+    });
+
     // Verify final state was saved
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
       'golf-match-state',
       expect.stringContaining('"phase":"complete"')
     );
+
+    vi.useRealTimers();
   });
 
   it('should resume match in the middle of play', async () => {

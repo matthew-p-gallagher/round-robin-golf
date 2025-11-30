@@ -142,7 +142,7 @@ describe('useMatchState Navigation State Management', () => {
   });
 
   describe('Reset Match Navigation State', () => {
-    it('should reset maxHoleReached to 1 when match is reset', () => {
+    it('should reset maxHoleReached to 1 when match is reset', async () => {
       // Start a match and progress
       act(() => {
         result.current.startMatch(validPlayerNames);
@@ -162,8 +162,8 @@ describe('useMatchState Navigation State Management', () => {
       expect(result.current.matchState.maxHoleReached).toBe(2);
 
       // Reset match
-      act(() => {
-        result.current.resetMatch();
+      await act(async () => {
+        await result.current.resetMatch();
       });
 
       // Verify reset state
@@ -175,6 +175,8 @@ describe('useMatchState Navigation State Management', () => {
 
   describe('State Persistence with Navigation', () => {
     it('should persist maxHoleReached in localStorage', () => {
+      vi.useFakeTimers();
+
       // Start a match and progress
       act(() => {
         result.current.startMatch(validPlayerNames);
@@ -190,11 +192,18 @@ describe('useMatchState Navigation State Management', () => {
         result.current.recordHoleResult(matchupResults);
       });
 
+      // Advance timers to trigger debounced save
+      act(() => {
+        vi.advanceTimersByTime(800);
+      });
+
       // Check that state was saved to localStorage
       const savedState = JSON.parse(localStorage.getItem('golf-match-state'));
       expect(savedState).toBeTruthy();
       expect(savedState.maxHoleReached).toBe(2);
       expect(savedState.currentHole).toBe(2);
+
+      vi.useRealTimers();
     });
 
     it('should restore maxHoleReached from localStorage', () => {

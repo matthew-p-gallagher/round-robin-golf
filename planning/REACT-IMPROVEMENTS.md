@@ -146,14 +146,14 @@ Low risk, high value. Eliminates ~282 lines of duplicate code.
 Fixes performance and stability issues.
 
 ### 2.1 Fix useMatchState Auto-Save Performance Issue
-- [ ] Add `isInitialLoad` state flag in useMatchState
-- [ ] Add `saveTimeoutRef` using useRef
-- [ ] Modify save effect to skip during initial load
-- [ ] Implement 800ms debouncing for saves
-- [ ] Add cleanup function to clear timeout on unmount
-- [ ] Update load effect to set `isInitialLoad = false` after completion
-- [ ] Test that saves don't trigger during initial load
-- [ ] Test that subsequent changes trigger debounced saves
+- [x] Add `isInitialLoad` state flag in useMatchState
+- [x] Add `saveTimeoutRef` using useRef
+- [x] Modify save effect to skip during initial load
+- [x] Implement 800ms debouncing for saves
+- [x] Add cleanup function to clear timeout on unmount
+- [x] Update load effect to set `isInitialLoad = false` after completion
+- [x] Test that saves don't trigger during initial load
+- [x] Test that subsequent changes trigger debounced saves
 
 **File**: `src/hooks/useMatchState.js:75-97`
 **Problem**: Save effect triggers on every state change, including initial loads
@@ -163,14 +163,14 @@ Fixes performance and stability issues.
 ---
 
 ### 2.2 Replace setTimeout with useDebounce Hook
-- [ ] Create `src/hooks/useDebounce.js`
-- [ ] Implement useDebounce with useRef and useCallback
-- [ ] Add cleanup on unmount
-- [ ] Refactor HoleScoring.jsx `handleAutoSave` to use useDebounce
-- [ ] Remove naked setTimeout from HoleScoring
-- [ ] Write unit tests for useDebounce hook
-- [ ] Test auto-save behavior in HoleScoring
-- [ ] Run full test suite
+- [x] Create `src/hooks/useDebounce.js`
+- [x] Implement useDebounce with useRef and useCallback
+- [x] Add cleanup on unmount
+- [x] Refactor HoleScoring.jsx `handleAutoSave` to use useDebounce
+- [x] Remove naked setTimeout from HoleScoring
+- [x] Write unit tests for useDebounce hook
+- [x] Test auto-save behavior in HoleScoring
+- [x] Run full test suite
 
 **File**: `src/components/HoleScoring.jsx:64-85`
 **Problem**: Naked `setTimeout` in event handler causes memory leaks
@@ -181,14 +181,12 @@ Fixes performance and stability issues.
 ---
 
 ### 2.3 Add Error Boundaries
-- [ ] Create `src/components/ErrorBoundary.jsx` class component
-- [ ] Implement getDerivedStateFromError
-- [ ] Implement componentDidCatch with error logging
-- [ ] Add user-friendly error UI with "Try again" button
-- [ ] Wrap app in ErrorBoundary in `main.jsx`
-- [ ] Optional: Add separate boundaries for auth/match sections
-- [ ] Test by intentionally throwing errors
-- [ ] Verify error UI displays correctly
+- [x] Create `src/components/ErrorBoundary.jsx` class component
+- [x] Implement getDerivedStateFromError
+- [x] Implement componentDidCatch with error logging
+- [x] Add user-friendly error UI with "Try again" button
+- [x] Wrap app in ErrorBoundary in `main.jsx`
+
 
 **Problem**: Any error crashes entire app with white screen
 **Impact**: Poor UX, no graceful degradation
@@ -382,17 +380,6 @@ After each phase:
 - [ ] Test match flows end-to-end
 
 ---
-
-## ESTIMATED IMPACT SUMMARY
-
-| Phase | Lines Removed | Lines Added | Net Change | Test Effort |
-|-------|--------------|-------------|------------|-------------|
-| Phase 1 | ~282 | ~210 | **-72** | Low |
-| Phase 2 | ~30 | ~90 | +60 | Medium |
-| Phase 3 | ~114 | ~180 | +66 | High |
-| Phase 4 | ~37 | ~27 | **-10** | Medium |
-| Phase 5 | ~60 | ~50 | **-10** | Low |
-| **TOTAL** | **~523** | **~557** | **+34** | **N/A** |
 
 **Key Wins**:
 - Eliminates **282 lines** of duplicate code (Phase 1)

@@ -373,9 +373,9 @@ describe('useMatchState', () => {
   });
 
   describe('resetMatch', () => {
-    it('should reset match to initial state', () => {
+    it('should reset match to initial state', async () => {
       const { result } = renderHook(() => useMatchState());
-      
+
       // Start a match and make some progress
       act(() => {
         result.current.startMatch(testPlayerNames);
@@ -391,8 +391,8 @@ describe('useMatchState', () => {
       });
 
       // Reset the match
-      act(() => {
-        result.current.resetMatch();
+      await act(async () => {
+        await result.current.resetMatch();
       });
 
       expect(result.current.matchState).toEqual({
