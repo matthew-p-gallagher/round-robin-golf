@@ -28,13 +28,13 @@ Low risk, high value. Eliminates ~282 lines of duplicate code.
 ---
 
 #### 1.1.2 EmailInput Component
-- [ ] Create `src/components/common/EmailInput.jsx`
-- [ ] Add props: `id`, `label`, `value`, `onChange`, `placeholder`, `disabled`, `autoFocus`, `required`
-- [ ] Refactor Login.jsx to use EmailInput
-- [ ] Refactor Signup.jsx to use EmailInput
-- [ ] Refactor ResetPassword.jsx to use EmailInput
-- [ ] Write unit tests for EmailInput
-- [ ] Verify all auth flows work correctly
+- [x] Create `src/components/common/EmailInput.jsx`
+- [x] Add props: `id`, `label`, `value`, `onChange`, `placeholder`, `disabled`, `autoFocus`, `required`
+- [x] Refactor Login.jsx to use EmailInput
+- [x] Refactor Signup.jsx to use EmailInput
+- [x] Refactor ResetPassword.jsx to use EmailInput
+- [x] Write unit tests for EmailInput
+- [x] Verify all auth flows work correctly
 
 **Impact**: Eliminates ~48 lines of duplicate code (3 instances)
 **New file**: `src/components/common/EmailInput.jsx` (~30 lines)
@@ -42,14 +42,14 @@ Low risk, high value. Eliminates ~282 lines of duplicate code.
 ---
 
 #### 1.1.3 AuthLayout Wrapper
-- [ ] Create `src/components/common/AuthLayout.jsx`
-- [ ] Add props: `title`, `subtitle`, `children`
-- [ ] Implement auth-container > auth-card > header structure
-- [ ] Refactor Login.jsx to use AuthLayout
-- [ ] Refactor Signup.jsx to use AuthLayout
-- [ ] Refactor ResetPassword.jsx to use AuthLayout
-- [ ] Refactor UpdatePassword.jsx to use AuthLayout
-- [ ] Verify styling consistency across all auth pages
+- [x] Create `src/components/common/AuthLayout.jsx`
+- [x] Add props: `title`, `subtitle`, `children`
+- [x] Implement auth-container > auth-card > header structure
+- [x] Refactor Login.jsx to use AuthLayout
+- [x] Refactor Signup.jsx to use AuthLayout
+- [x] Refactor ResetPassword.jsx to use AuthLayout
+- [x] Refactor UpdatePassword.jsx to use AuthLayout
+- [x] Verify styling consistency across all auth pages
 
 **Impact**: Eliminates ~40 lines of duplicate code (4 instances)
 **New file**: `src/components/common/AuthLayout.jsx` (~20 lines)
@@ -59,14 +59,14 @@ Low risk, high value. Eliminates ~282 lines of duplicate code.
 ### 1.2 Create Feedback Components
 
 #### 1.2.1 ErrorMessage Component
-- [ ] Create `src/components/common/ErrorMessage.jsx`
-- [ ] Support single error string via `error` prop
-- [ ] Support error array via `errors` prop
-- [ ] Add `className` prop for custom styling
-- [ ] Refactor all auth components to use ErrorMessage
-- [ ] Refactor MatchSetup.jsx to use ErrorMessage
-- [ ] Refactor App.jsx error display to use ErrorMessage
-- [ ] Write unit tests
+- [x] Create `src/components/common/ErrorMessage.jsx`
+- [x] Support single error string via `error` prop
+- [x] Support error array via `errors` prop
+- [x] Add `className` prop for custom styling
+- [x] Refactor all auth components to use ErrorMessage
+- [x] Refactor MatchSetup.jsx to use ErrorMessage
+- [x] Refactor App.jsx error display to use ErrorMessage
+- [x] Write unit tests
 
 **Impact**: Eliminates ~30 lines, centralizes error display logic
 **New file**: `src/components/common/ErrorMessage.jsx` (~25 lines)
@@ -74,13 +74,13 @@ Low risk, high value. Eliminates ~282 lines of duplicate code.
 ---
 
 #### 1.2.2 SuccessMessage Component
-- [ ] Create `src/components/common/SuccessMessage.jsx`
-- [ ] Add props: `message`, `action`, `onAction`, `className`
-- [ ] Support optional action button
-- [ ] Refactor Signup.jsx to use SuccessMessage
-- [ ] Refactor ResetPassword.jsx to use SuccessMessage
-- [ ] Refactor UpdatePassword.jsx to use SuccessMessage
-- [ ] Write unit tests
+- [x] Create `src/components/common/SuccessMessage.jsx`
+- [x] Add props: `message`, `action`, `onAction`, `className`
+- [x] Support optional action button
+- [x] Refactor Signup.jsx to use SuccessMessage
+- [x] Refactor ResetPassword.jsx to use SuccessMessage
+- [x] Refactor UpdatePassword.jsx to use SuccessMessage
+- [x] Write unit tests
 
 **Impact**: Eliminates ~25 lines across auth flows
 **New file**: `src/components/common/SuccessMessage.jsx` (~25 lines)
@@ -88,11 +88,11 @@ Low risk, high value. Eliminates ~282 lines of duplicate code.
 ---
 
 #### 1.2.3 LoadingSpinner Component
-- [ ] Create `src/components/common/LoadingSpinner.jsx`
-- [ ] Add `message` prop with default "Loading..."
-- [ ] Refactor App.jsx loading state to use LoadingSpinner
-- [ ] Refactor MatchSetup.jsx loading state to use LoadingSpinner
-- [ ] Write unit tests
+- [x] Create `src/components/common/LoadingSpinner.jsx`
+- [x] Add `message` prop with default "Loading..."
+- [x] Refactor App.jsx loading state to use LoadingSpinner
+- [x] Refactor MatchSetup.jsx loading state to use LoadingSpinner
+- [x] Write unit tests
 
 **Impact**: Eliminates ~10 lines, ensures consistency
 **New file**: `src/components/common/LoadingSpinner.jsx` (~15 lines)
@@ -102,13 +102,13 @@ Low risk, high value. Eliminates ~282 lines of duplicate code.
 ### 1.3 Create Layout Components
 
 #### 1.3.1 PageLayout Component
-- [ ] Create `src/components/common/PageLayout.jsx`
-- [ ] Add props: `children`, `className`
-- [ ] Implement screen > container wrapper
-- [ ] Refactor MatchSetup.jsx to use PageLayout
-- [ ] Refactor HoleScoring.jsx to use PageLayout
-- [ ] Refactor FinalResults.jsx to use PageLayout
-- [ ] Verify layout consistency
+- [x] Create `src/components/common/PageLayout.jsx`
+- [x] Add props: `children`, `className`
+- [x] Implement screen > container wrapper
+- [x] Refactor MatchSetup.jsx to use PageLayout
+- [x] Refactor HoleScoring.jsx to use PageLayout
+- [x] Refactor FinalResults.jsx to use PageLayout
+- [x] Verify layout consistency
 
 **Impact**: Standardizes screen/container pattern
 **New file**: `src/components/common/PageLayout.jsx` (~10 lines)
@@ -116,10 +116,10 @@ Low risk, high value. Eliminates ~282 lines of duplicate code.
 ---
 
 #### 1.3.2 Card Component (Optional)
-- [ ] Create `src/components/common/Card.jsx`
-- [ ] Add props: `title`, `description`, `children`, `className`
-- [ ] Refactor MatchSetup.jsx cards (2 instances)
-- [ ] Write unit tests
+- [x] Create `src/components/common/Card.jsx`
+- [x] Add props: `title`, `description`, `children`, `className`
+- [x] Refactor MatchSetup.jsx cards (2 instances)
+- [x] Write unit tests
 
 **Impact**: Standardizes card pattern
 **New file**: `src/components/common/Card.jsx` (~20 lines)
@@ -127,13 +127,13 @@ Low risk, high value. Eliminates ~282 lines of duplicate code.
 ---
 
 ### 1.4 Extract Validation Utilities
-- [ ] Create `src/utils/validation.js`
-- [ ] Move `validatePassword` from Signup.jsx and UpdatePassword.jsx
-- [ ] Add `validateEmail` function
-- [ ] Export reusable validators
-- [ ] Refactor Signup.jsx to use validation utils
-- [ ] Refactor UpdatePassword.jsx to use validation utils
-- [ ] Write unit tests for validation functions
+- [x] Create `src/utils/validation.js`
+- [x] Move `validatePassword` from Signup.jsx and UpdatePassword.jsx
+- [x] Add `validateEmail` function
+- [x] Export reusable validators
+- [x] Refactor Signup.jsx to use validation utils
+- [x] Refactor UpdatePassword.jsx to use validation utils
+- [x] Write unit tests for validation functions
 
 **Impact**: Eliminates duplicate validation logic
 **New file**: `src/utils/validation.js` (~20 lines)
@@ -154,7 +154,6 @@ Fixes performance and stability issues.
 - [ ] Update load effect to set `isInitialLoad = false` after completion
 - [ ] Test that saves don't trigger during initial load
 - [ ] Test that subsequent changes trigger debounced saves
-- [ ] Run full test suite
 
 **File**: `src/hooks/useMatchState.js:75-97`
 **Problem**: Save effect triggers on every state change, including initial loads

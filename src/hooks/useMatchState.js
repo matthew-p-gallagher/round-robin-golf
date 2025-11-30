@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createMatchupsForHole } from '../utils/matchup-rotation.js';
 import { createPlayer, processHoleResult, sortPlayersByRanking, calculateHolesCompleted } from '../utils/player-stats.js';
 import { 
@@ -26,6 +26,10 @@ export function useMatchState(user) {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Refs for managing save behavior
+  const isInitialLoadRef = useRef(true);
+  const saveTimeoutRef = useRef(null);
 
   // Load user's match state when they log in, clear when they log out
   useEffect(() => {
@@ -65,15 +69,27 @@ export function useMatchState(user) {
         }
       } finally {
         setLoading(false);
+        isInitialLoadRef.current = false;
       }
     }
 
     loadUserMatchState();
   }, [user?.id]);
 
-  // Save state to Supabase/localStorage whenever it changes
+  // Save state to Supabase/localStorage whenever it changes (debounced)
   useEffect(() => {
-    async function saveCurrentState() {
+    // Skip saves during initial load to prevent race conditions
+    if (isInitialLoadRef.current) {
+      return;
+    }
+
+    // Clear any pending save timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Debounce saves with 800ms delay
+    saveTimeoutRef.current = setTimeout(async () => {
       // Only save if we're not in the initial setup phase with no players
       if (matchState.phase === 'setup' && matchState.players.length === 0) {
         return;
@@ -93,9 +109,14 @@ export function useMatchState(user) {
           setError('Failed to save match data to server');
         }
       }
-    }
+    }, 800);
 
-    saveCurrentState();
+    // Cleanup timeout on unmount or before next save
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
   }, [matchState, user?.id]);
 
   /**
