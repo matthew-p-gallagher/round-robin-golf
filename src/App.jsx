@@ -155,13 +155,13 @@ function App() {
         <ErrorMessage error={matchError} />
 
         {matchState.phase === 'setup' && (
-          <MatchSetup 
+          <MatchSetup
             onStartMatch={handleStartMatch}
             onResumeMatch={handleResumeMatch}
             canResumeMatch={canResumeMatch}
           />
         )}
-        
+
         {matchState.phase === 'scoring' && (
           <HoleScoring
             currentHole={matchState.currentHole}

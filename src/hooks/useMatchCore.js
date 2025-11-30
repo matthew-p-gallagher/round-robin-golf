@@ -1,25 +1,23 @@
-import { useState } from 'react';
+import { useReducer, useCallback } from 'react';
 import { createMatchupsForHole } from '../utils/matchup-rotation.js';
-import { createPlayer, processHoleResult, sortPlayersByRanking, calculateHolesCompleted } from '../utils/player-stats.js';
-
-/**
- * Default initial match state
- */
-const DEFAULT_MATCH_STATE = {
-  players: [],
-  currentHole: 1,
-  phase: 'setup',
-  holeResults: [],
-  maxHoleReached: 1
-};
+import { sortPlayersByRanking, calculateHolesCompleted, processHoleResult } from '../utils/player-stats.js';
+import { matchReducer, INITIAL_STATE, ACTIONS } from '../reducers/matchReducer.js';
 
 /**
  * Custom hook for core match state management (no persistence)
- * Handles all match state operations and queries
+ * Handles all match state operations and queries using reducer pattern
  * @returns {Object} Match state and functions to manipulate it
  */
 export function useMatchCore() {
-  const [matchState, setMatchState] = useState(DEFAULT_MATCH_STATE);
+  const [matchState, dispatch] = useReducer(matchReducer, INITIAL_STATE);
+
+  /**
+   * Set match state directly (used by persistence layer to load saved state)
+   * @param {Object} newState - New match state to load
+   */
+  const setMatchState = useCallback((newState) => {
+    dispatch({ type: ACTIONS.LOAD_MATCH, payload: { matchState: newState } });
+  }, []);
 
   /**
    * Initialize a new match with 4 players
@@ -40,16 +38,7 @@ export function useMatchCore() {
       throw new Error('All player names must be non-empty');
     }
 
-    // Create player objects with initial stats
-    const players = playerNames.map(name => createPlayer(name));
-
-    setMatchState({
-      players,
-      currentHole: 1,
-      phase: 'scoring',
-      holeResults: [],
-      maxHoleReached: 1
-    });
+    dispatch({ type: ACTIONS.START_MATCH, payload: { playerNames } });
   };
 
   /**
@@ -79,27 +68,7 @@ export function useMatchCore() {
       throw new Error('Both matchups must have results before proceeding');
     }
 
-    // Process hole result using utility function
-    const updatedPlayers = processHoleResult(matchState.players, matchupResults);
-
-    // Create hole result record
-    const holeResult = {
-      holeNumber: matchState.currentHole,
-      matchups: matchupResults
-    };
-
-    // Determine next phase and hole
-    const nextHole = matchState.currentHole + 1;
-    const nextPhase = nextHole > 18 ? 'complete' : 'scoring';
-
-    setMatchState(prevState => ({
-      ...prevState,
-      players: updatedPlayers,
-      currentHole: nextPhase === 'complete' ? 18 : nextHole,
-      phase: nextPhase,
-      holeResults: [...prevState.holeResults, holeResult],
-      maxHoleReached: Math.max(prevState.maxHoleReached, nextPhase === 'complete' ? 18 : nextHole)
-    }));
+    dispatch({ type: ACTIONS.RECORD_HOLE_RESULT, payload: { matchupResults } });
   };
 
   /**
@@ -127,7 +96,7 @@ export function useMatchCore() {
    * Reset the match state to initial state (does not clear persistence)
    */
   const resetMatchState = () => {
-    setMatchState(DEFAULT_MATCH_STATE);
+    dispatch({ type: ACTIONS.RESET_MATCH });
   };
 
   /**
@@ -143,10 +112,7 @@ export function useMatchCore() {
       throw new Error(`Cannot navigate beyond hole ${matchState.maxHoleReached}`);
     }
 
-    setMatchState(prevState => ({
-      ...prevState,
-      currentHole: holeNumber
-    }));
+    dispatch({ type: ACTIONS.NAVIGATE_TO_HOLE, payload: { holeNumber } });
   };
 
   /**
@@ -168,39 +134,24 @@ export function useMatchCore() {
       throw new Error('Both matchups must have results');
     }
 
-    // Update the hole result in the holeResults array
-    const updatedHoleResults = [...matchState.holeResults];
-    const existingResultIndex = updatedHoleResults.findIndex(hr => hr.holeNumber === holeNumber);
-
-    const newHoleResult = {
-      holeNumber,
-      matchups: matchupResults
-    };
-
-    if (existingResultIndex >= 0) {
-      updatedHoleResults[existingResultIndex] = newHoleResult;
-    } else {
-      updatedHoleResults.push(newHoleResult);
-      updatedHoleResults.sort((a, b) => a.holeNumber - b.holeNumber);
-    }
-
     // Recalculate all player stats from scratch
-    const recalculatedPlayers = recalculateStatsFromHole(1, updatedHoleResults);
+    const recalculatedPlayers = recalculateStatsFromHole(1, matchState.holeResults, matchupResults, holeNumber);
 
-    setMatchState(prevState => ({
-      ...prevState,
-      holeResults: updatedHoleResults,
-      players: recalculatedPlayers
-    }));
+    dispatch({
+      type: ACTIONS.UPDATE_HOLE_RESULT,
+      payload: { holeNumber, matchupResults, recalculatedPlayers }
+    });
   };
 
   /**
    * Recalculate player statistics from a specific hole forward
    * @param {number} startingHole - Hole to start recalculation from
-   * @param {HoleResult[]} holeResults - Optional hole results array (uses current state if not provided)
+   * @param {HoleResult[]} holeResults - Hole results array to use for calculation
+   * @param {Array} newMatchupResults - New matchup results being added (optional)
+   * @param {number} updatingHoleNumber - Hole number being updated (optional)
    * @returns {Player[]} Updated players array with recalculated stats
    */
-  const recalculateStatsFromHole = (startingHole, holeResults = matchState.holeResults) => {
+  const recalculateStatsFromHole = (startingHole, holeResults, newMatchupResults = null, updatingHoleNumber = null) => {
     // Reset all players to initial state
     let updatedPlayers = matchState.players.map(player => ({
       ...player,
@@ -210,8 +161,25 @@ export function useMatchCore() {
       losses: 0
     }));
 
+    // Build the complete hole results array including the update
+    let allHoleResults = [...holeResults];
+    if (newMatchupResults && updatingHoleNumber) {
+      const existingResultIndex = allHoleResults.findIndex(hr => hr.holeNumber === updatingHoleNumber);
+      const newHoleResult = {
+        holeNumber: updatingHoleNumber,
+        matchups: newMatchupResults
+      };
+
+      if (existingResultIndex >= 0) {
+        allHoleResults[existingResultIndex] = newHoleResult;
+      } else {
+        allHoleResults.push(newHoleResult);
+        allHoleResults.sort((a, b) => a.holeNumber - b.holeNumber);
+      }
+    }
+
     // Process all hole results from the beginning
-    for (const holeResult of holeResults) {
+    for (const holeResult of allHoleResults) {
       if (holeResult.holeNumber >= startingHole) {
         updatedPlayers = processHoleResult(updatedPlayers, holeResult.matchups);
       }
