@@ -38,14 +38,10 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   const signUp = async (email, password) => {
-    setLoading(true)
-
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     })
-
-    setLoading(false)
 
     if (error) {
       throw error
@@ -55,14 +51,10 @@ export const AuthProvider = ({ children }) => {
   }
 
   const signIn = async (email, password) => {
-    setLoading(true)
-
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
-
-    setLoading(false)
 
     if (error) {
       throw error
