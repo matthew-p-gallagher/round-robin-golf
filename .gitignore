@@ -29,9 +29,8 @@ dist-ssr
 *.sln
 *.sw?
 
-review-files/
 commit-msg.txt
 .claude/
 CLAUDE.md
 coverage/
-ISSUES.md
+planning/
