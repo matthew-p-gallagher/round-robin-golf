@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase.js'
-import { clearMatchState } from '../utils/match-persistence.js'
 
 const AuthContext = createContext({})
 
@@ -69,9 +68,6 @@ export const AuthProvider = ({ children }) => {
     if (error) {
       throw error
     }
-
-    // Clear local match data on logout
-    clearMatchState()
   }
 
   const resetPassword = async (email) => {

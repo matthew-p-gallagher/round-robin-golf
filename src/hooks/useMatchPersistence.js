@@ -5,12 +5,10 @@ import {
   clearMatchStateFromSupabase,
   hasMatchStateInSupabase
 } from '../utils/supabase-match-persistence.js';
-// Keep localStorage as fallback for offline support
-import { saveMatchState, loadMatchState, clearMatchState, hasSavedMatchState } from '../utils/match-persistence.js';
 
 /**
- * Custom hook for managing match state persistence to Supabase and localStorage
- * Handles loading, saving, and clearing match data with fallback support
+ * Custom hook for managing match state persistence to Supabase
+ * Handles loading, saving, and clearing match data
  * @param {Object} matchState - The current match state to persist
  * @param {Object} user - The authenticated user object (with id property)
  * @param {Function} setMatchState - Callback to update match state with loaded data
@@ -24,11 +22,11 @@ export function useMatchPersistence(matchState, user, setMatchState) {
   const isInitialLoadRef = useRef(true);
   const saveTimeoutRef = useRef(null);
 
-  // Load user's match state when they log in, clear when they log out
+  // Load user's match state when they log in, reset to default when they log out
   useEffect(() => {
     async function loadUserMatchState() {
       if (!user?.id) {
-        // User logged out - clear match state and load from localStorage as fallback
+        // User logged out - reset to default empty state
         setMatchState({
           players: [],
           currentHole: 1,
@@ -36,11 +34,6 @@ export function useMatchPersistence(matchState, user, setMatchState) {
           holeResults: [],
           maxHoleReached: 1
         });
-
-        const savedState = loadMatchState();
-        if (savedState) {
-          setMatchState(savedState);
-        }
         return;
       }
 
@@ -54,12 +47,7 @@ export function useMatchPersistence(matchState, user, setMatchState) {
         }
       } catch (err) {
         console.error('Error loading match state:', err);
-        setError('Failed to load match data');
-        // Fallback to localStorage if Supabase fails
-        const localState = loadMatchState();
-        if (localState) {
-          setMatchState(localState);
-        }
+        setError('Connection lost.');
       } finally {
         setLoading(false);
         isInitialLoadRef.current = false;
@@ -69,7 +57,7 @@ export function useMatchPersistence(matchState, user, setMatchState) {
     loadUserMatchState();
   }, [user?.id, setMatchState]);
 
-  // Save state to Supabase/localStorage whenever it changes (debounced)
+  // Save state to Supabase whenever it changes (debounced)
   useEffect(() => {
     // Skip saves during initial load to prevent race conditions
     if (isInitialLoadRef.current) {
@@ -88,18 +76,13 @@ export function useMatchPersistence(matchState, user, setMatchState) {
         return;
       }
 
-      // Only save to localStorage if user is authenticated (logged in)
-      // When logged out, don't save to localStorage to avoid race conditions
+      // Only save if user is authenticated
       if (user?.id) {
-        // Save to localStorage as fallback for offline support
-        saveMatchState(matchState);
-
-        // Also save to Supabase
         try {
           await saveMatchStateToSupabase(matchState, user.id);
         } catch (err) {
           console.error('Error saving to Supabase:', err);
-          setError('Failed to save match data to server');
+          setError('Connection lost.');
         }
       }
     }, 800);
@@ -113,23 +96,20 @@ export function useMatchPersistence(matchState, user, setMatchState) {
   }, [matchState, user?.id]);
 
   /**
-   * Clear persisted match data from both Supabase and localStorage
+   * Clear persisted match data from Supabase
    */
   const clearPersistedState = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // Clear from localStorage
-      clearMatchState();
-
       // Clear from Supabase if user is authenticated
       if (user?.id) {
         await clearMatchStateFromSupabase(user.id);
       }
     } catch (err) {
       console.error('Error clearing persisted state:', err);
-      setError('Failed to clear match data');
+      setError('Connection lost.');
       throw err;
     } finally {
       setLoading(false);
@@ -146,12 +126,11 @@ export function useMatchPersistence(matchState, user, setMatchState) {
         return await hasMatchStateInSupabase(user.id);
       } catch (err) {
         console.error('Error checking for saved match:', err);
-        // Fallback to localStorage check
+        return false;
       }
     }
 
-    // Fallback for non-authenticated users or if Supabase fails
-    return hasSavedMatchState();
+    return false;
   };
 
   return {
