@@ -199,7 +199,7 @@ describe('HoleScoring Component', () => {
 
     render(
       <HoleScoring
-        currentHole={9}
+        currentHole={10}
         matchups={mockMatchups}
         onRecordResults={mockOnRecordResults}
         players={mockPlayers}
@@ -210,7 +210,7 @@ describe('HoleScoring Component', () => {
     const progressBar = document.querySelector('.progress-bar');
     expect(progressBar).toBeInTheDocument();
 
-    // Check progress fill width (should be 50% for hole 9)
+    // Check progress fill width (should be 50% on hole 10)
     const progressFill = document.querySelector('.progress-fill');
     expect(progressFill).toHaveStyle('width: 50%');
   });
