@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import HoleScoring from '../components/HoleScoring.jsx';
+import HoleScoring from './HoleScoring.jsx';
 
 // Mock data
 const mockPlayers = [

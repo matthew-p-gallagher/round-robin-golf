@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import MatchSetup from '../components/MatchSetup.jsx';
+import MatchSetup from './MatchSetup.jsx';
 
 describe('MatchSetup Component', () => {
   const mockOnStartMatch = vi.fn();

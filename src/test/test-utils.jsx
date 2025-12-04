@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { MockAuthProvider, createMockAuthContext } from './test-providers.jsx'
+import { MockAuthProvider, createMockAuthContext } from './utils/test-providers.jsx'
 
 /**
  * Custom render function that includes providers
@@ -92,4 +92,4 @@ export {
   createMockAuthContext,
   createAuthWrapper,
   AUTH_STATES
-} from './test-providers.jsx'
+} from './utils/test-providers.jsx'

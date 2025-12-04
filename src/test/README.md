@@ -2,6 +2,27 @@
 
 This directory contains the testing infrastructure and utilities for the Round Robin Golf Scoring System.
 
+## Directory Structure
+
+```
+src/test/
+├── utils/                    # Test utility functions
+│   ├── async-test-utils.js  # Async/debounce testing helpers
+│   ├── component-test-utils.jsx  # Component testing utilities
+│   ├── form-test-utils.jsx  # Form testing helpers
+│   └── test-providers.jsx   # Mock providers (AuthContext, etc.)
+├── fixtures/                 # Test data and fixtures
+│   └── mock-data.js         # Mock match data and players
+├── mocks/                    # Module mocks
+│   └── supabase-mock.js     # Supabase client mock factory
+├── integration/              # Integration tests
+│   ├── backward-navigation.test.js
+│   └── scoring-scenarios.test.js
+├── setup.js                  # Global test setup
+├── test-utils.jsx           # Custom render functions
+└── README.md                # This file
+```
+
 ## Setup
 
 The testing environment is configured with:
@@ -13,28 +34,59 @@ The testing environment is configured with:
 
 ## Files
 
-### `setup.js`
+### Core Files
+
+#### `setup.js`
 Global test setup file that:
 - Imports jest-dom matchers
 - Clears mocks between tests
 - Configures global test environment
 
-### `test-utils.jsx`
-Custom render function and re-exports of React Testing Library utilities.
+#### `test-utils.jsx`
+Custom render function and re-exports of React Testing Library utilities. Imports from `utils/test-providers.jsx`.
 
-### `component-test-utils.jsx`
+### Utilities (`utils/`)
+
+#### `async-test-utils.js`
+Helpers for testing asynchronous behavior and debounced functions.
+
+#### `component-test-utils.jsx`
 Specialized utilities for component testing:
 - `renderWithUser()` - Renders components with user event setup
 - Button state assertions
 - Mobile touch event simulation
 - Form validation helpers
 
-### `mock-data.js`
+#### `form-test-utils.jsx`
+Utilities for testing form validation and submission flows.
+
+#### `test-providers.jsx`
+Mock providers for testing components that require context:
+- `MockAuthProvider` - Mock authentication context
+- `createMockAuthContext()` - Helper for creating mock auth values
+- `AUTH_STATES` - Common auth state configurations
+
+### Fixtures (`fixtures/`)
+
+#### `mock-data.js`
 Mock data for golf match scenarios:
 - Sample players with various stats
 - Match states for different phases (setup, scoring, complete)
 - Expected matchup rotation patterns
 - Helper functions for creating test data
+
+### Mocks (`mocks/`)
+
+#### `supabase-mock.js`
+Factory function for creating Supabase client mocks with configurable responses.
+
+### Integration Tests (`integration/`)
+
+#### `backward-navigation.test.js`
+Integration tests for navigating backward through holes and editing previous results.
+
+#### `scoring-scenarios.test.js`
+Comprehensive scoring scenarios testing edge cases in points calculation.
 
 ## Available Scripts
 
@@ -73,14 +125,14 @@ describe('MyComponent', () => {
 
 ### Component Testing with User Interactions
 ```javascript
-import { renderWithUser } from '../test/component-test-utils'
-import { mockPlayers } from '../test/mock-data'
+import { renderWithUser } from '../test/utils/component-test-utils'
+import { mockPlayers } from '../test/fixtures/mock-data'
 
 describe('Interactive Component', () => {
   it('should handle user clicks', async () => {
     const { user } = renderWithUser(<MyComponent players={mockPlayers} />)
     const button = screen.getByRole('button')
-    
+
     await user.click(button)
     expect(/* assertion */).toBeTruthy()
   })
@@ -89,7 +141,7 @@ describe('Interactive Component', () => {
 
 ### Using Mock Data
 ```javascript
-import { mockMatchState, mockPlayers } from '../test/mock-data'
+import { mockMatchState, mockPlayers } from '../test/fixtures/mock-data'
 
 describe('Match Logic', () => {
   it('should process match state correctly', () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useMatchState } from '../hooks/useMatchState.js';
+import { useMatchState } from './useMatchState.js';
 
 // Mock Supabase
 vi.mock('../lib/supabase.js');

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import EmailInput from '../components/common/EmailInput.jsx';
+import EmailInput from './EmailInput.jsx';
 
 describe('EmailInput Component', () => {
   const defaultProps = {

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useMatchState } from '../hooks/useMatchState.js';
-import { validPlayerNames } from './mock-data.js';
+import { useMatchState } from '../../hooks/useMatchState.js';
+import { validPlayerNames } from '../fixtures/mock-data.js';
 
 describe('Backward Navigation Integration Tests', () => {
   let result;

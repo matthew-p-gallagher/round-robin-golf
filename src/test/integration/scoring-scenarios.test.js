@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { processHoleResult, updatePlayerStats, calculateHolesCompleted, sortPlayersByRanking, createPlayer } from '../utils/player-stats.js';
+import { processHoleResult, updatePlayerStats, calculateHolesCompleted, sortPlayersByRanking, createPlayer } from '../../utils/player-stats.js';
 
 describe('Comprehensive Scoring Scenarios', () => {
   describe('Points Calculation Edge Cases', () => {
