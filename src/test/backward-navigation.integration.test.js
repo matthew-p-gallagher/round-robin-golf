@@ -7,7 +7,6 @@ describe('Backward Navigation Integration Tests', () => {
   let result;
 
   beforeEach(() => {
-    localStorage.clear();
     const { result: hookResult } = renderHook(() => useMatchState());
     result = hookResult;
   });

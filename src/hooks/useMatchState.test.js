@@ -2,16 +2,6 @@ import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useMatchState } from './useMatchState.js';
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-};
-
-global.localStorage = localStorageMock;
-
 // Mock the matchup rotation utility
 vi.mock('../utils/matchup-rotation.js', () => ({
   createMatchupsForHole: vi.fn()
@@ -21,11 +11,9 @@ import { createMatchupsForHole } from '../utils/matchup-rotation.js';
 
 describe('useMatchState', () => {
   const testPlayerNames = ['Alice', 'Bob', 'Charlie', 'David'];
-  
+
   beforeEach(() => {
     vi.clearAllMocks();
-    // Clear localStorage mock to ensure clean state
-    localStorageMock.getItem.mockReturnValue(null);
   });
 
   describe('Initial State', () => {

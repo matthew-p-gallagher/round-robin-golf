@@ -1,14 +1,16 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useMatchState } from '../hooks/useMatchState.js';
 import { validPlayerNames } from './mock-data.js';
+
+// Mock Supabase for persistence tests
+vi.mock('../lib/supabase.js');
+import { supabase } from '../lib/supabase.js';
 
 describe('useMatchState Navigation State Management', () => {
   let result;
 
   beforeEach(() => {
-    // Clear localStorage before each test
-    localStorage.clear();
     const { result: hookResult } = renderHook(() => useMatchState());
     result = hookResult;
   });
@@ -174,40 +176,84 @@ describe('useMatchState Navigation State Management', () => {
   });
 
   describe('State Persistence with Navigation', () => {
-    it('should persist maxHoleReached in localStorage', () => {
+    const mockUser = { id: 'test-user-123', email: 'test@example.com' };
+    let mockSupabaseClient;
+
+    beforeEach(() => {
+      vi.clearAllMocks();
+
+      // Create fresh mock for each test
+      mockSupabaseClient = {
+        from: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: null,
+                error: { code: 'PGRST116', message: 'No rows found' }
+              })
+            })
+          }),
+          upsert: vi.fn().mockResolvedValue({ error: null })
+        })
+      };
+
+      supabase.from = mockSupabaseClient.from;
+    });
+
+    it('should persist maxHoleReached to Supabase', async () => {
+      const { result: testResult } = renderHook(() => useMatchState(mockUser));
+
+      // Wait for initial load
+      await waitFor(() => {
+        expect(testResult.current.matchState.phase).toBe('setup');
+      });
+
       vi.useFakeTimers();
 
       // Start a match and progress
       act(() => {
-        result.current.startMatch(validPlayerNames);
+        testResult.current.startMatch(validPlayerNames);
       });
 
-      const matchups = result.current.getCurrentMatchups();
+      // Advance timers for first save
+      await act(async () => {
+        vi.advanceTimersByTime(800);
+        await vi.runAllTimersAsync();
+      });
+
+      const matchups = testResult.current.getCurrentMatchups();
       const matchupResults = [
         { ...matchups[0], result: 'player1' },
         { ...matchups[1], result: 'draw' }
       ];
 
       act(() => {
-        result.current.recordHoleResult(matchupResults);
+        testResult.current.recordHoleResult(matchupResults);
       });
 
       // Advance timers to trigger debounced save
-      act(() => {
+      await act(async () => {
         vi.advanceTimersByTime(800);
+        await vi.runAllTimersAsync();
       });
 
-      // Check that state was saved to localStorage
-      const savedState = JSON.parse(localStorage.getItem('golf-match-state'));
-      expect(savedState).toBeTruthy();
-      expect(savedState.maxHoleReached).toBe(2);
-      expect(savedState.currentHole).toBe(2);
-
       vi.useRealTimers();
+
+      // Verify Supabase upsert was called with maxHoleReached
+      expect(mockSupabaseClient.from).toHaveBeenCalledWith('user_current_match');
+      expect(mockSupabaseClient.from().upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user_id: mockUser.id,
+          match_data: expect.objectContaining({
+            maxHoleReached: 2,
+            currentHole: 2
+          })
+        })
+      );
     });
 
-    it('should restore maxHoleReached from localStorage', () => {
-      // Manually set localStorage with a state that has maxHoleReached
+    it('should restore maxHoleReached from Supabase', async () => {
+      // Mock Supabase to return state with maxHoleReached
       const savedState = {
         players: validPlayerNames.map(name => ({ name, points: 0, wins: 0, draws: 0, losses: 0 })),
         currentHole: 5,
@@ -215,12 +261,27 @@ describe('useMatchState Navigation State Management', () => {
         holeResults: [],
         maxHoleReached: 5
       };
-      localStorage.setItem('golf-match-state', JSON.stringify(savedState));
 
-      // Create new hook instance (simulating app restart)
-      const { result: newResult } = renderHook(() => useMatchState());
+      mockSupabaseClient.from = vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: { match_data: savedState },
+              error: null
+            })
+          })
+        })
+      });
+      supabase.from = mockSupabaseClient.from;
 
-      expect(newResult.current.matchState.currentHole).toBe(5);
+      // Create new hook instance with user (simulating app restart)
+      const { result: newResult } = renderHook(() => useMatchState(mockUser));
+
+      // Wait for state to load from Supabase
+      await waitFor(() => {
+        expect(newResult.current.matchState.currentHole).toBe(5);
+      });
+
       expect(newResult.current.matchState.maxHoleReached).toBe(5);
       expect(newResult.current.matchState.phase).toBe('scoring');
     });

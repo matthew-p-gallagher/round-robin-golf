@@ -1,20 +1,43 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useMatchState } from '../hooks/useMatchState.js';
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-};
+// Mock Supabase
+vi.mock('../lib/supabase.js');
 
-global.localStorage = localStorageMock;
+// Import the mocked supabase
+import { supabase } from '../lib/supabase.js';
+
+// Mock user for testing
+const mockUser = { id: 'test-user-123', email: 'test@example.com' };
+
+// Helper to create Supabase mock responses
+let mockSupabaseClient;
 
 describe('useMatchState Persistence Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Create fresh mock for each test
+    mockSupabaseClient = {
+      from: vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { code: 'PGRST116', message: 'No rows found' }
+            })
+          })
+        }),
+        upsert: vi.fn().mockResolvedValue({ error: null }),
+        delete: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({ error: null })
+        })
+      })
+    };
+
+    // Apply mock to supabase
+    supabase.from = mockSupabaseClient.from;
   });
 
   it('should initialize with saved state when available', async () => {
@@ -31,60 +54,151 @@ describe('useMatchState Persistence Integration', () => {
       maxHoleReached: 3
     };
 
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(savedState));
+    // Mock Supabase to return saved state
+    mockSupabaseClient.from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({
+            data: { match_data: savedState },
+            error: null
+          })
+        })
+      })
+    });
+    supabase.from = mockSupabaseClient.from;
 
-    const { result } = renderHook(() => useMatchState());
+    const { result } = renderHook(() => useMatchState(mockUser));
 
-    expect(result.current.matchState).toEqual(savedState);
+    // Wait for async load to complete
+    await waitFor(() => {
+      expect(result.current.matchState).toEqual(savedState);
+    });
+
     expect(await result.current.canResumeMatch()).toBe(true);
   });
 
   it('should initialize with default state when no saved state exists', async () => {
-    localStorageMock.getItem.mockReturnValue(null);
-
-    const { result } = renderHook(() => useMatchState());
-
-    expect(result.current.matchState).toEqual({
-      players: [],
-      currentHole: 1,
-      phase: 'setup',
-      holeResults: [],
-      maxHoleReached: 1
+    // Mock Supabase to return no data (PGRST116 error)
+    mockSupabaseClient.from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({
+            data: null,
+            error: { code: 'PGRST116', message: 'No rows found' }
+          })
+        })
+      })
     });
+    supabase.from = mockSupabaseClient.from;
+
+    const { result } = renderHook(() => useMatchState(mockUser));
+
+    // Wait for async load to complete
+    await waitFor(() => {
+      expect(result.current.matchState).toEqual({
+        players: [],
+        currentHole: 1,
+        phase: 'setup',
+        holeResults: [],
+        maxHoleReached: 1
+      });
+    });
+
     expect(await result.current.canResumeMatch()).toBe(false);
   });
 
-  it('should save state to localStorage when match is started', () => {
-    localStorageMock.getItem.mockReturnValue(null);
+  it('should save state to Supabase when match is started', async () => {
+    // Mock Supabase for load (no saved state)
+    mockSupabaseClient.from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({
+            data: null,
+            error: { code: 'PGRST116' }
+          })
+        })
+      }),
+      upsert: vi.fn().mockResolvedValue({ error: null })
+    });
+    supabase.from = mockSupabaseClient.from;
 
-    const { result } = renderHook(() => useMatchState());
+    const { result } = renderHook(() => useMatchState(mockUser));
+
+    // Wait for initial load
+    await waitFor(() => {
+      expect(result.current.matchState.phase).toBe('setup');
+    });
+
+    vi.useFakeTimers();
 
     act(() => {
       result.current.startMatch(['Alice', 'Bob', 'Charlie', 'David']);
     });
 
-    expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'golf-match-state',
-      expect.stringContaining('"phase":"scoring"')
-    );
+    // Advance timers to trigger debounced save
+    await act(async () => {
+      vi.advanceTimersByTime(800);
+      await vi.runAllTimersAsync();
+    });
 
-    const savedData = JSON.parse(localStorageMock.setItem.mock.calls[0][1]);
-    expect(savedData.players).toHaveLength(4);
-    expect(savedData.phase).toBe('scoring');
-    expect(savedData.currentHole).toBe(1);
+    vi.useRealTimers();
+
+    // Verify Supabase upsert was called
+    expect(mockSupabaseClient.from).toHaveBeenCalledWith('user_current_match');
+    expect(mockSupabaseClient.from().upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        user_id: mockUser.id,
+        match_data: expect.objectContaining({
+          phase: 'scoring',
+          currentHole: 1,
+          players: expect.arrayContaining([
+            expect.objectContaining({ name: 'Alice' })
+          ])
+        })
+      })
+    );
   });
 
-  it('should save state to localStorage when hole results are recorded', () => {
-    localStorageMock.getItem.mockReturnValue(null);
+  it('should save state to Supabase when hole results are recorded', async () => {
+    // Create persistent mock objects
+    const upsertSpy = vi.fn().mockResolvedValue({ error: null });
+    const mockTable = {
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({
+            data: null,
+            error: { code: 'PGRST116' }
+          })
+        })
+      }),
+      upsert: upsertSpy
+    };
 
-    const { result } = renderHook(() => useMatchState());
+    // Mock Supabase for load (no saved state)
+    mockSupabaseClient.from = vi.fn().mockReturnValue(mockTable);
+    supabase.from = mockSupabaseClient.from;
+
+    const { result } = renderHook(() => useMatchState(mockUser));
+
+    // Wait for initial load
+    await waitFor(() => {
+      expect(result.current.matchState.phase).toBe('setup');
+    });
+
+    vi.useFakeTimers();
 
     act(() => {
       result.current.startMatch(['Alice', 'Bob', 'Charlie', 'David']);
+    });
+
+    // Advance timers for first save
+    await act(async () => {
+      vi.advanceTimersByTime(800);
+      await vi.runAllTimersAsync();
     });
 
     // Clear previous calls
-    localStorageMock.setItem.mockClear();
+    upsertSpy.mockClear();
 
     const matchups = result.current.getCurrentMatchups();
     const matchupResults = [
@@ -96,14 +210,29 @@ describe('useMatchState Persistence Integration', () => {
       result.current.recordHoleResult(matchupResults);
     });
 
-    expect(localStorageMock.setItem).toHaveBeenCalled();
+    // Advance timers to trigger debounced save
+    await act(async () => {
+      vi.advanceTimersByTime(800);
+      await vi.runAllTimersAsync();
+    });
 
-    const savedData = JSON.parse(localStorageMock.setItem.mock.calls[0][1]);
-    expect(savedData.currentHole).toBe(2);
-    expect(savedData.holeResults).toHaveLength(1);
+    vi.useRealTimers();
+
+    // Verify Supabase upsert was called with updated state
+    expect(upsertSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        user_id: mockUser.id,
+        match_data: expect.objectContaining({
+          currentHole: 2,
+          holeResults: expect.arrayContaining([
+            expect.objectContaining({ holeNumber: 1 })
+          ])
+        })
+      })
+    );
   });
 
-  it('should clear localStorage when match is reset', async () => {
+  it('should clear Supabase when match is reset', async () => {
     const savedState = {
       players: [
         { name: 'Alice', points: 6, wins: 2, draws: 0, losses: 0 },
@@ -117,17 +246,39 @@ describe('useMatchState Persistence Integration', () => {
       maxHoleReached: 3
     };
 
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(savedState));
+    // Mock Supabase to return saved state
+    mockSupabaseClient.from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({
+            data: { match_data: savedState },
+            error: null
+          })
+        })
+      }),
+      delete: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({ error: null })
+      })
+    });
+    supabase.from = mockSupabaseClient.from;
 
-    const { result } = renderHook(() => useMatchState());
+    const { result } = renderHook(() => useMatchState(mockUser));
 
-    expect(result.current.matchState.phase).toBe('scoring');
+    // Wait for state to load
+    await waitFor(() => {
+      expect(result.current.matchState.phase).toBe('scoring');
+    });
 
     await act(async () => {
       await result.current.resetMatch();
     });
 
-    expect(localStorageMock.removeItem).toHaveBeenCalledWith('golf-match-state');
+    // Verify Supabase delete was called
+    expect(mockSupabaseClient.from).toHaveBeenCalledWith('user_current_match');
+    expect(mockSupabaseClient.from().delete).toHaveBeenCalled();
+    expect(mockSupabaseClient.from().delete().eq).toHaveBeenCalledWith('user_id', mockUser.id);
+
+    // Verify state is reset
     expect(result.current.matchState).toEqual({
       players: [],
       currentHole: 1,
@@ -137,43 +288,105 @@ describe('useMatchState Persistence Integration', () => {
     });
   });
 
-  it('should not save initial setup state with no players', () => {
-    localStorageMock.getItem.mockReturnValue(null);
+  it('should not save initial setup state with no players', async () => {
+    // Mock Supabase for load (no saved state)
+    mockSupabaseClient.from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({
+            data: null,
+            error: { code: 'PGRST116' }
+          })
+        })
+      }),
+      upsert: vi.fn().mockResolvedValue({ error: null })
+    });
+    supabase.from = mockSupabaseClient.from;
 
-    renderHook(() => useMatchState());
+    const { result } = renderHook(() => useMatchState(mockUser));
+
+    // Wait for initial load
+    await waitFor(() => {
+      expect(result.current.matchState.phase).toBe('setup');
+    });
+
+    vi.useFakeTimers();
+
+    // Advance timers past debounce
+    await act(async () => {
+      vi.advanceTimersByTime(800);
+      await vi.runAllTimersAsync();
+    });
+
+    vi.useRealTimers();
 
     // Should not save the initial empty state
-    expect(localStorageMock.setItem).not.toHaveBeenCalled();
+    expect(mockSupabaseClient.from().upsert).not.toHaveBeenCalled();
   });
 
-  it('should handle localStorage errors gracefully during initialization', () => {
-    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    localStorageMock.getItem.mockImplementation(() => {
-      throw new Error('Storage error');
+  it('should handle Supabase errors gracefully during initialization', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Mock Supabase to throw error on load
+    mockSupabaseClient.from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockRejectedValue(new Error('Network error'))
+        })
+      })
     });
+    supabase.from = mockSupabaseClient.from;
 
-    const { result } = renderHook(() => useMatchState());
+    const { result } = renderHook(() => useMatchState(mockUser));
 
-    expect(result.current.matchState).toEqual({
-      players: [],
-      currentHole: 1,
-      phase: 'setup',
-      holeResults: [],
-      maxHoleReached: 1
-    });
+    // Wait for error handling to complete and default state to be set
+    await waitFor(() => {
+      expect(result.current).toBeTruthy();
+      expect(result.current.matchState).toEqual({
+        players: [],
+        currentHole: 1,
+        phase: 'setup',
+        holeResults: [],
+        maxHoleReached: 1
+      });
+    }, { timeout: 3000 });
 
-    consoleSpy.mockRestore();
+    consoleError.mockRestore();
   });
 
-  it('should persist match through completion', () => {
+  it('should persist match through completion', async () => {
+    // Mock Supabase for load (no saved state)
+    mockSupabaseClient.from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({
+            data: null,
+            error: { code: 'PGRST116' }
+          })
+        })
+      }),
+      upsert: vi.fn().mockResolvedValue({ error: null })
+    });
+    supabase.from = mockSupabaseClient.from;
+
+    const { result } = renderHook(() => useMatchState(mockUser));
+
+    // Wait for initial load
+    await waitFor(() => {
+      expect(result.current.matchState.phase).toBe('setup');
+    });
+
     vi.useFakeTimers();
-    localStorageMock.getItem.mockReturnValue(null);
-
-    const { result } = renderHook(() => useMatchState());
 
     // Start match
     act(() => {
       result.current.startMatch(['Alice', 'Bob', 'Charlie', 'David']);
+    });
+
+    // Advance timers for initial save
+    await act(async () => {
+      vi.advanceTimersByTime(800);
+      await vi.runAllTimersAsync();
     });
 
     // Play through to hole 18
@@ -187,23 +400,22 @@ describe('useMatchState Persistence Integration', () => {
       act(() => {
         result.current.recordHoleResult(matchupResults);
       });
+
+      // Advance timers after each hole
+      await act(async () => {
+        vi.advanceTimersByTime(800);
+        await vi.runAllTimersAsync();
+      });
     }
+
+    vi.useRealTimers();
 
     expect(result.current.matchState.phase).toBe('complete');
     expect(result.current.matchState.currentHole).toBe(18);
 
-    // Advance timers to trigger debounced save
-    act(() => {
-      vi.advanceTimersByTime(800);
-    });
-
-    // Verify final state was saved
-    expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'golf-match-state',
-      expect.stringContaining('"phase":"complete"')
-    );
-
-    vi.useRealTimers();
+    // Verify final state was saved with complete phase
+    const lastUpsertCall = mockSupabaseClient.from().upsert.mock.calls[mockSupabaseClient.from().upsert.mock.calls.length - 1];
+    expect(lastUpsertCall[0].match_data.phase).toBe('complete');
   });
 
   it('should resume match in the middle of play', async () => {
@@ -229,11 +441,26 @@ describe('useMatchState Persistence Integration', () => {
       maxHoleReached: 10
     };
 
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(midGameState));
+    // Mock Supabase to return mid-game state
+    mockSupabaseClient.from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({
+            data: { match_data: midGameState },
+            error: null
+          })
+        })
+      })
+    });
+    supabase.from = mockSupabaseClient.from;
 
-    const { result } = renderHook(() => useMatchState());
+    const { result } = renderHook(() => useMatchState(mockUser));
 
-    expect(result.current.matchState).toEqual(midGameState);
+    // Wait for state to load
+    await waitFor(() => {
+      expect(result.current.matchState).toEqual(midGameState);
+    });
+
     expect(await result.current.canResumeMatch()).toBe(true);
 
     // Should be able to continue playing
