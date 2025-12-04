@@ -1,15 +1,95 @@
 import React from 'react'
 import { render } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { MockAuthProvider, createMockAuthContext } from './test-providers.jsx'
 
-// Custom render function that includes any providers
-const customRender = (ui, options) => {
+/**
+ * Custom render function that includes providers
+ * @param {React.ReactElement} ui - Component to render
+ * @param {Object} options - Render options
+ * @param {Object} options.authContext - Mock auth context value (optional)
+ * @param {Function} options.wrapper - Custom wrapper component (optional)
+ * @returns {Object} Render result
+ */
+const customRender = (ui, options = {}) => {
+  const { authContext, wrapper, ...renderOptions } = options
+
+  // Create wrapper with auth context if provided
+  let Wrapper = ({ children }) => children
+
+  if (authContext) {
+    Wrapper = ({ children }) => (
+      <MockAuthProvider value={authContext}>
+        {wrapper ? wrapper({ children }) : children}
+      </MockAuthProvider>
+    )
+  } else if (wrapper) {
+    Wrapper = wrapper
+  }
+
   return render(ui, {
-    // Add any providers here if needed in the future
-    wrapper: ({ children }) => children,
-    ...options,
+    wrapper: Wrapper,
+    ...renderOptions,
   })
 }
 
-// Re-export everything
+/**
+ * Render with authenticated user context
+ * @param {React.ReactElement} ui - Component to render
+ * @param {Object} options - Additional options
+ * @param {Object} options.user - Mock user object (defaults to authenticated user)
+ * @param {boolean} options.loading - Loading state (defaults to false)
+ * @returns {Object} Render result with auth context
+ */
+export const renderWithAuth = (ui, options = {}) => {
+  const authContext = createMockAuthContext(options)
+
+  return customRender(ui, {
+    ...options,
+    authContext
+  })
+}
+
+/**
+ * Render with userEvent setup
+ * @param {React.ReactElement} ui - Component to render
+ * @param {Object} options - Render options (same as customRender)
+ * @returns {Promise<Object>} Render result with user object
+ */
+export const renderWithUser = async (ui, options = {}) => {
+  return {
+    user: userEvent.setup(),
+    ...customRender(ui, options)
+  }
+}
+
+/**
+ * Render with both auth context and userEvent
+ * @param {React.ReactElement} ui - Component to render
+ * @param {Object} options - Combined options for auth and render
+ * @returns {Promise<Object>} Render result with user and auth
+ */
+export const renderWithAuthAndUser = async (ui, options = {}) => {
+  const authContext = createMockAuthContext(options)
+
+  return {
+    user: userEvent.setup(),
+    authContext,
+    ...customRender(ui, {
+      ...options,
+      authContext
+    })
+  }
+}
+
+// Re-export everything from testing library
 export * from '@testing-library/react'
 export { customRender as render }
+
+// Re-export test providers for convenience
+export {
+  MockAuthProvider,
+  createMockAuthContext,
+  createAuthWrapper,
+  AUTH_STATES
+} from './test-providers.jsx'
