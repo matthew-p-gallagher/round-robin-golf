@@ -135,7 +135,7 @@ function MatchSetup({ onStartMatch, canResumeMatch }) {
   if (checkingResume) {
     return (
       <PageLayout>
-        <LoadingSpinner message="Checking for saved matches..." />
+        <LoadingSpinner />
       </PageLayout>
     );
   }

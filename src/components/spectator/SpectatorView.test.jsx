@@ -53,7 +53,7 @@ describe('SpectatorView', () => {
 
       render(<SpectatorView />)
 
-      expect(screen.getByText('Loading match...')).toBeInTheDocument()
+      expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument()
     })
   })
 

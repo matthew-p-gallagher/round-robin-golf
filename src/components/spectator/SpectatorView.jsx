@@ -26,7 +26,7 @@ export default function SpectatorView() {
     return (
       <div className="app">
         <main className="app-main">
-          <LoadingSpinner message="Loading match..." />
+          <LoadingSpinner />
         </main>
       </div>
     )

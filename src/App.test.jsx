@@ -63,7 +63,7 @@ vi.mock('./components/common/ErrorMessage.jsx', () => ({
 }))
 
 vi.mock('./components/common/LoadingSpinner.jsx', () => ({
-  default: () => <div data-testid="loading-spinner">Loading...</div>
+  default: () => <div data-testid="loading-spinner"></div>
 }))
 
 vi.mock('./components/spectator/ShareCodeEntry.jsx', () => ({
