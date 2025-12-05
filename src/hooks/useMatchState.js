@@ -1,5 +1,6 @@
 import { useMatchCore } from './useMatchCore.js';
 import { useMatchPersistence } from './useMatchPersistence.js';
+import { deactivateShareCodes } from '../utils/supabase-share-persistence.js';
 
 /**
  * Custom hook for managing golf match state with persistence
@@ -37,7 +38,12 @@ export function useMatchState(user) {
    */
   const resetMatch = async () => {
     try {
-      // Clear persisted data first
+      // Deactivate share codes for this user
+      if (user?.id) {
+        await deactivateShareCodes(user.id);
+      }
+
+      // Clear persisted data
       await clearPersistedState();
 
       // Then reset local state

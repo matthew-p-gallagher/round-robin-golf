@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import './App.css'
 import { useAuth } from './context/AuthContext.jsx'
 import { useMatchState } from './hooks/useMatchState.js'
@@ -11,18 +12,18 @@ import HoleScoring from './components/HoleScoring.jsx'
 import FinalResults from './components/FinalResults.jsx'
 import ErrorMessage from './components/common/ErrorMessage.jsx'
 import LoadingSpinner from './components/common/LoadingSpinner.jsx'
+import ShareCodeEntry from './components/spectator/ShareCodeEntry.jsx'
+import SpectatorView from './components/spectator/SpectatorView.jsx'
 
-function App() {
-  const { user, loading, signOut } = useAuth()
-  const [authView, setAuthView] = useState('login')
-  const [isRecoveryMode, setIsRecoveryMode] = useState(false)
-  
+/**
+ * Authenticated app flow - handles match management for logged-in users
+ */
+function AuthenticatedApp({ user, onSignOut }) {
   const {
     matchState,
     loading: matchLoading,
     error: matchError,
     startMatch,
-    getCurrentMatchups,
     recordHoleResult,
     resetMatch,
     canResumeMatch,
@@ -30,6 +31,98 @@ function App() {
     updateHoleResult,
     getMatchupsForHole
   } = useMatchState(user);
+
+  if (matchLoading) {
+    return (
+      <div className="app">
+        <main className="app-main">
+          <LoadingSpinner />
+        </main>
+      </div>
+    )
+  }
+
+  return (
+    <div className="app">
+      <header className="app-header">
+        <div className="header-content">
+          <h1>Round Robin Golf</h1>
+          <div className="user-info">
+            <span>{user.email}</span>
+            <button onClick={onSignOut} className="sign-out-button">
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="app-main">
+        <ErrorMessage error={matchError} />
+
+        {matchState.phase === 'setup' && (
+          <MatchSetup
+            onStartMatch={startMatch}
+            canResumeMatch={canResumeMatch}
+          />
+        )}
+
+        {matchState.phase === 'scoring' && (
+          <HoleScoring
+            currentHole={matchState.currentHole}
+            maxHoleReached={matchState.maxHoleReached}
+            matchups={getMatchupsForHole(matchState.currentHole)}
+            onRecordResults={recordHoleResult}
+            onNavigateToHole={navigateToHole}
+            onUpdateHoleResult={updateHoleResult}
+            players={matchState.players}
+            userId={user.id}
+          />
+        )}
+
+        {matchState.phase === 'complete' && (
+          <FinalResults
+            players={matchState.players}
+            onNewMatch={resetMatch}
+          />
+        )}
+      </main>
+    </div>
+  )
+}
+
+/**
+ * Unauthenticated app flow - handles login/signup screens
+ */
+function UnauthenticatedApp() {
+  const [authView, setAuthView] = useState('login')
+
+  return (
+    <div className="app">
+      <main className="app-main">
+        {authView === 'login' && (
+          <Login
+            onShowSignup={() => setAuthView('signup')}
+            onShowResetPassword={() => setAuthView('reset')}
+          />
+        )}
+        {authView === 'signup' && (
+          <Signup
+            onShowLogin={() => setAuthView('login')}
+          />
+        )}
+        {authView === 'reset' && (
+          <ResetPassword
+            onShowLogin={() => setAuthView('login')}
+          />
+        )}
+      </main>
+    </div>
+  )
+}
+
+function App() {
+  const { user, loading, signOut } = useAuth()
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false)
 
   // Detect password recovery mode from URL hash
   useEffect(() => {
@@ -56,36 +149,12 @@ function App() {
     }
   };
 
-  if (loading || matchLoading) {
+  // Show loading spinner while auth is loading
+  if (loading) {
     return (
       <div className="app">
         <main className="app-main">
           <LoadingSpinner />
-        </main>
-      </div>
-    )
-  }
-
-  if (!user) {
-    return (
-      <div className="app">
-        <main className="app-main">
-          {authView === 'login' && (
-            <Login
-              onShowSignup={() => setAuthView('signup')}
-              onShowResetPassword={() => setAuthView('reset')}
-            />
-          )}
-          {authView === 'signup' && (
-            <Signup
-              onShowLogin={() => setAuthView('login')}
-            />
-          )}
-          {authView === 'reset' && (
-            <ResetPassword
-              onShowLogin={() => setAuthView('login')}
-            />
-          )}
         </main>
       </div>
     )
@@ -103,49 +172,21 @@ function App() {
   }
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <div className="header-content">
-          <h1>Round Robin Golf</h1>
-          <div className="user-info">
-            <span>{user.email}</span>
-            <button onClick={handleSignOut} className="sign-out-button">
-              Sign Out
-            </button>
-          </div>
-        </div>
-      </header>
-      
-      <main className="app-main">
-        <ErrorMessage error={matchError} />
+    <Routes>
+      {/* Public spectator routes - no auth required */}
+      <Route path="/view" element={<ShareCodeEntry />} />
+      <Route path="/view/:code" element={<SpectatorView />} />
 
-        {matchState.phase === 'setup' && (
-          <MatchSetup
-            onStartMatch={startMatch}
-            canResumeMatch={canResumeMatch}
-          />
-        )}
-
-        {matchState.phase === 'scoring' && (
-          <HoleScoring
-            currentHole={matchState.currentHole}
-            maxHoleReached={matchState.maxHoleReached}
-            matchups={getMatchupsForHole(matchState.currentHole)}
-            onRecordResults={recordHoleResult}
-            onNavigateToHole={navigateToHole}
-            onUpdateHoleResult={updateHoleResult}
-            players={matchState.players}
-          />
-        )}
-        
-        {matchState.phase === 'complete' && (
-          <FinalResults
-            players={matchState.players}
-            onNewMatch={resetMatch}
-          />
-        )}
-      </main>
-    </div>
+      {/* Main app route - auth required */}
+      <Route
+        path="/*"
+        element={
+          user
+            ? <AuthenticatedApp user={user} onSignOut={handleSignOut} />
+            : <UnauthenticatedApp />
+        }
+      />
+    </Routes>
   )
 }
 

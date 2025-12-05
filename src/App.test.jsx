@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from './test/test-utils.jsx'
 import userEvent from '@testing-library/user-event'
 import App from './App.jsx'
 
@@ -66,6 +66,14 @@ vi.mock('./components/common/LoadingSpinner.jsx', () => ({
   default: () => <div data-testid="loading-spinner">Loading...</div>
 }))
 
+vi.mock('./components/spectator/ShareCodeEntry.jsx', () => ({
+  default: () => <div data-testid="share-code-entry">Share Code Entry</div>
+}))
+
+vi.mock('./components/spectator/SpectatorView.jsx', () => ({
+  default: () => <div data-testid="spectator-view">Spectator View</div>
+}))
+
 // Import mocked modules
 import { useAuth } from './context/AuthContext.jsx'
 import { useMatchState } from './hooks/useMatchState.js'
@@ -123,6 +131,10 @@ describe('App', () => {
     })
 
     it('should show loading spinner when match is loading', () => {
+      // User must be authenticated to show match loading
+      mockUseAuth.user = { id: 'test-user', email: 'test@example.com' }
+      useAuth.mockReturnValue(mockUseAuth)
+
       mockUseMatchState.loading = true
       useMatchState.mockReturnValue(mockUseMatchState)
 

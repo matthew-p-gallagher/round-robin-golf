@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import AuthLayout from '../common/AuthLayout.jsx'
 import EmailInput from '../common/EmailInput.jsx'
@@ -91,6 +92,13 @@ export default function Login({ onShowSignup, onShowResetPassword }) {
             Sign up
           </button>
         </div>
+      </div>
+
+      <div className="spectator-link">
+        <span>Want to view a match?</span>
+        <Link to="/view" className="link-button">
+          Enter match code
+        </Link>
       </div>
     </AuthLayout>
   )

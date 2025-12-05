@@ -1,6 +1,7 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { MockAuthProvider, createMockAuthContext } from './utils/test-providers.jsx'
 
 /**
@@ -9,22 +10,34 @@ import { MockAuthProvider, createMockAuthContext } from './utils/test-providers.
  * @param {Object} options - Render options
  * @param {Object} options.authContext - Mock auth context value (optional)
  * @param {Function} options.wrapper - Custom wrapper component (optional)
+ * @param {string[]} options.initialEntries - Initial router entries (optional)
  * @returns {Object} Render result
  */
 const customRender = (ui, options = {}) => {
-  const { authContext, wrapper, ...renderOptions } = options
+  const { authContext, wrapper, initialEntries = ['/'], ...renderOptions } = options
 
-  // Create wrapper with auth context if provided
-  let Wrapper = ({ children }) => children
+  // Create wrapper with auth context and router if provided
+  let Wrapper = ({ children }) => (
+    <MemoryRouter initialEntries={initialEntries}>
+      {children}
+    </MemoryRouter>
+  )
 
   if (authContext) {
     Wrapper = ({ children }) => (
-      <MockAuthProvider value={authContext}>
-        {wrapper ? wrapper({ children }) : children}
-      </MockAuthProvider>
+      <MemoryRouter initialEntries={initialEntries}>
+        <MockAuthProvider value={authContext}>
+          {wrapper ? wrapper({ children }) : children}
+        </MockAuthProvider>
+      </MemoryRouter>
     )
   } else if (wrapper) {
-    Wrapper = wrapper
+    const CustomWrapper = wrapper
+    Wrapper = ({ children }) => (
+      <MemoryRouter initialEntries={initialEntries}>
+        <CustomWrapper>{children}</CustomWrapper>
+      </MemoryRouter>
+    )
   }
 
   return render(ui, {
@@ -39,6 +52,7 @@ const customRender = (ui, options = {}) => {
  * @param {Object} options - Additional options
  * @param {Object} options.user - Mock user object (defaults to authenticated user)
  * @param {boolean} options.loading - Loading state (defaults to false)
+ * @param {string[]} options.initialEntries - Initial router entries (optional)
  * @returns {Object} Render result with auth context
  */
 export const renderWithAuth = (ui, options = {}) => {

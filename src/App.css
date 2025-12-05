@@ -1112,3 +1112,228 @@
     padding: var(--spacing-md);
   }
 }
+
+/* =================================================================
+   SPECTATOR ACCESS STYLES
+   ================================================================= */
+
+/* Login page spectator link */
+.spectator-link {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Share code entry input */
+.share-code-input {
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+  display: block;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.5em;
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-family: monospace;
+}
+
+.share-code-input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.share-code-input::placeholder {
+  color: var(--color-text-light);
+  opacity: 0.5;
+}
+
+/* Share code display card (in HoleScoring) */
+.share-code-card {
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  text-align: center;
+  margin-top: var(--spacing-md);
+}
+
+.share-code-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-xs);
+}
+
+.share-code-value {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: monospace;
+  letter-spacing: 0.3em;
+  color: var(--color-primary);
+  padding: var(--spacing-sm) 0;
+}
+
+.share-code-hint {
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+  margin-top: var(--spacing-xs);
+}
+
+.share-code-loading,
+.share-code-error {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  padding: var(--spacing-sm);
+}
+
+.share-code-error {
+  color: var(--color-error);
+}
+
+/* Spectator header */
+.spectator-header {
+  background-color: var(--color-primary);
+}
+
+.spectator-header .header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.spectator-badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--color-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Spectator container */
+.spectator-container {
+  padding: var(--spacing-md);
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Spectator status bar */
+.spectator-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-sm);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+}
+
+.status-info {
+  font-weight: 600;
+}
+
+.status-in-progress {
+  color: var(--color-primary);
+}
+
+.status-complete {
+  color: var(--color-success);
+}
+
+.last-updated {
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+}
+
+/* Spectator progress */
+.spectator-progress {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+}
+
+.spectator-progress .progress-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.spectator-progress .progress-bar {
+  max-width: 100%;
+  border-radius: var(--border-radius);
+}
+
+/* Spectator footer */
+.spectator-footer {
+  margin-top: var(--spacing-lg);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.refresh-button {
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 1rem;
+  min-height: 44px;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refresh-button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-secondary);
+}
+
+/* Spectator error state */
+.spectator-error {
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+.spectator-actions {
+  margin-top: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.spectator-actions .auth-button.secondary {
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+  min-width: 200px;
+}
+
+.spectator-actions .auth-button.secondary:hover {
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
+}

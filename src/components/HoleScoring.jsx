@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PointsTable from './PointsTable.jsx';
 import PageLayout from './common/PageLayout.jsx';
+import ShareCodeDisplay from './match/ShareCodeDisplay.jsx';
 import { useTimeout } from '../hooks/useDebounce.js';
 
 /**
@@ -13,15 +14,17 @@ import { useTimeout } from '../hooks/useDebounce.js';
  * @param {Function} props.onNavigateToHole - Callback to navigate to a specific hole
  * @param {Function} props.onUpdateHoleResult - Callback to update results for a specific hole
  * @param {Player[]} props.players - Array of players for stats display
+ * @param {string} props.userId - The authenticated user's ID (for share code display)
  */
-function HoleScoring({ 
-  currentHole, 
+function HoleScoring({
+  currentHole,
   maxHoleReached = currentHole, // Default to currentHole if not provided
-  matchups, 
-  onRecordResults, 
+  matchups,
+  onRecordResults,
   onNavigateToHole = () => {}, // Default empty function for tests
   onUpdateHoleResult = () => {}, // Default empty function for tests
-  players 
+  players,
+  userId
 }) {
   const [matchupResults, setMatchupResults] = useState([
     { ...matchups[0], result: matchups[0].result || null },
@@ -263,12 +266,15 @@ try {
         {/* Current Standings */}
         <div className="standings-card">
           <h3 className="standings-title">Current Standings</h3>
-          <PointsTable 
+          <PointsTable
             players={players}
             currentHole={currentHole}
             showWinnerHighlight={false}
           />
         </div>
+
+        {/* Share Code for Spectators */}
+        <ShareCodeDisplay userId={userId} />
     </PageLayout>
   );
 }

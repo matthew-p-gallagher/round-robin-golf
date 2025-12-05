@@ -3,7 +3,7 @@
  */
 
 import { vi } from 'vitest'
-import { AuthContext } from '../context/AuthContext.jsx'
+import { AuthContext } from '../../context/AuthContext.jsx'
 
 /**
  * Create a mock AuthContext value with configurable state

@@ -87,3 +87,42 @@ CREATE TRIGGER update_user_current_match_updated_at
   "maxHoleReached": 1
 }
 */
+
+-- =============================================================================
+-- MATCH SHARING FOR SPECTATOR ACCESS
+-- =============================================================================
+-- Allows match owners to share a 4-digit code so spectators can view standings
+
+-- Table for storing share codes
+CREATE TABLE match_shares (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  share_code varchar(4) NOT NULL UNIQUE,
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now()
+);
+
+-- Enable Row Level Security
+ALTER TABLE match_shares ENABLE ROW LEVEL SECURITY;
+
+-- Index for fast share code lookups
+CREATE INDEX idx_match_shares_code ON match_shares(share_code) WHERE is_active = true;
+CREATE INDEX idx_match_shares_user_id ON match_shares(user_id);
+
+-- RLS Policy: Owner can manage their own share codes
+CREATE POLICY "Users manage their own shares" ON match_shares
+  FOR ALL USING (auth.uid() = user_id);
+
+-- RLS Policy: Anyone can look up active share codes (for spectator validation)
+CREATE POLICY "Anyone can read active shares" ON match_shares
+  FOR SELECT USING (is_active = true);
+
+-- RLS Policy: Allow spectators to read match data via valid share code
+CREATE POLICY "Spectators view via share code" ON user_current_match
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM match_shares
+      WHERE match_shares.user_id = user_current_match.user_id
+      AND match_shares.is_active = true
+    )
+  );
