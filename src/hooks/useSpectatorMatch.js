@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { getMatchByShareCode } from '../utils/supabase-share-persistence.js'
 
-const POLL_INTERVAL = 15000 // 15 seconds
+const POLL_INTERVAL = 5000 // 5 seconds
 
 /**
  * @typedef {Object} SpectatorMatchState
