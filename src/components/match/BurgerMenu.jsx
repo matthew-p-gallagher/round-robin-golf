@@ -1,20 +1,32 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 /**
  * Burger menu component for app header
- * Provides access to end match and sign out
+ * Provides access to share, end match and sign out
  * @param {Object} props
  * @param {string} props.phase - Current match phase ('setup' | 'scoring' | 'complete')
  * @param {Function} props.onSignOut - Callback to sign out
  * @param {Function} [props.onEndMatch] - Callback to end match (scoring phase only)
+ * @param {Function} [props.onShowShare] - Callback to show share overlay (scoring phase only)
  */
 export default function BurgerMenu({
   phase,
   onSignOut,
-  onEndMatch
+  onEndMatch,
+  onShowShare
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const [confirmingAction, setConfirmingAction] = useState(null) // null | 'signOut' | 'endMatch'
+
+  // Auto-reset confirmation after 2 seconds
+  useEffect(() => {
+    if (confirmingAction) {
+      const timeout = setTimeout(() => {
+        setConfirmingAction(null)
+      }, 2000)
+      return () => clearTimeout(timeout)
+    }
+  }, [confirmingAction])
 
   const handleToggle = () => {
     if (isOpen) {
@@ -51,6 +63,11 @@ export default function BurgerMenu({
     }
   }
 
+  const handleShareClick = () => {
+    handleClose()
+    onShowShare?.()
+  }
+
   const isScoring = phase === 'scoring'
 
   return (
@@ -74,6 +91,20 @@ export default function BurgerMenu({
             onClick={handleClose}
           />
           <div className="burger-menu-dropdown">
+            {/* Share option - scoring phase only */}
+            {isScoring && (
+              <>
+                <button
+                  type="button"
+                  className="burger-menu-item"
+                  onClick={handleShareClick}
+                >
+                  Share Match
+                </button>
+                <div className="burger-menu-divider" />
+              </>
+            )}
+
             {/* End match option - scoring phase only */}
             {isScoring && (
               <>

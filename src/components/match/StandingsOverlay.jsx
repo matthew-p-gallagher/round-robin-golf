@@ -24,11 +24,12 @@ export default function StandingsOverlay({ players, currentHole, onClose }) {
       </div>
 
       <div className="overlay-content">
-        <div className="overlay-card">
+        <div className="overlay-card standings-card-overlay">
           <PointsTable
             players={players}
             currentHole={currentHole}
             showWinnerHighlight={false}
+            showPosition={true}
           />
         </div>
       </div>

@@ -13,7 +13,6 @@ import { useTimeout } from '../hooks/useDebounce.js';
  * @param {Function} props.onUpdateHoleResult - Callback to update results for a specific hole
  * @param {Player[]} props.players - Array of players for stats display
  * @param {Function} props.onShowStandings - Callback to show standings overlay
- * @param {Function} props.onShowShare - Callback to show share overlay
  */
 function HoleScoring({
   currentHole,
@@ -23,8 +22,7 @@ function HoleScoring({
   onNavigateToHole = () => {}, // Default empty function for tests
   onUpdateHoleResult = () => {}, // Default empty function for tests
   players,
-  onShowStandings = () => {}, // Default empty function for tests
-  onShowShare = () => {} // Default empty function for tests
+  onShowStandings = () => {} // Default empty function for tests
 }) {
   const [matchupResults, setMatchupResults] = useState([
     { ...matchups[0], result: matchups[0].result || null },
@@ -263,21 +261,14 @@ try {
         ))}
       </div>
 
-      {/* Action buttons */}
-      <div className="scoring-actions">
+      {/* Quick actions bar */}
+      <div className="quick-actions">
         <button
           type="button"
-          className="scoring-action-button"
+          className="quick-action-button quick-action-primary"
           onClick={onShowStandings}
         >
-          Current Standings
-        </button>
-        <button
-          type="button"
-          className="scoring-action-button"
-          onClick={onShowShare}
-        >
-          Share Match
+          Points Table
         </button>
       </div>
     </PageLayout>

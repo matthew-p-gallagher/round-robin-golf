@@ -10,31 +10,51 @@
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   font-weight: 400;
-  
-  /* High contrast colors for outdoor visibility */
-  --color-primary: #1a5f1a;
-  --color-primary-light: #2d8f2d;
-  --color-secondary: #ffffff;
-  --color-text: #1a1a1a;
-  --color-text-light: #666666;
-  --color-background: #1a5f1a;
-  --color-surface: #f8f9fa;
-  --color-border: #e0e0e0;
-  --color-success: #28a745;
-  --color-warning: #ffc107;
-  --color-error: #dc3545;
-  
+
+  /* Botanical Garden Theme Colors */
+  --color-primary: #4a7c59;           /* Fern Green */
+  --color-primary-light: #5a9469;     /* Fern Green Light */
+  --color-primary-dark: #3d6849;      /* Fern Green Dark (hover) */
+  --color-secondary: #ffffff;         /* White */
+  --color-background: #4a7c59;        /* Fern Green */
+  --color-surface: #f5f3ed;           /* Cream */
+  --color-border: #e0e0e0;            /* Border Gray */
+
+  /* Text Colors */
+  --color-text: #1a1a1a;              /* Text Dark */
+  --color-text-light: #666666;        /* Text Light */
+  --color-text-secondary: #888888;    /* Text Secondary */
+
+  /* Semantic Colors */
+  --color-success: #28a745;           /* Success Green */
+  --color-success-light: #34ce57;     /* Success Light */
+  --color-warning: #f9a620;           /* Marigold */
+  --color-error: #b7472a;             /* Terracotta */
+  --color-error-light: #d4563a;       /* Terracotta Light */
+
   /* Mobile-first spacing */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+
   /* Touch-friendly sizing */
   --touch-target: 44px;
-  --border-radius: 8px;
-  
+  --border-radius-sm: 4px;
+  --border-radius: 4px;
+  --border-radius-lg: 12px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -92,21 +112,28 @@ button {
   background-color: var(--color-primary);
   color: var(--color-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
-  
+  transition: all var(--transition-normal);
+
   /* Remove default button styles */
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background-color: var(--color-primary-light);
   border-color: var(--color-primary-light);
 }
 
-button:active {
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.2);
+}
+
+button:active:not(:disabled) {
   transform: translateY(1px);
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
 }
 
 button:disabled {
@@ -120,8 +147,12 @@ button.secondary {
   color: var(--color-primary);
 }
 
-button.secondary:hover {
+button.secondary:hover:not(:disabled) {
   background-color: var(--color-surface);
+}
+
+button.secondary:active:not(:disabled) {
+  background-color: var(--color-border);
 }
 
 /* Touch-friendly inputs */
@@ -134,7 +165,8 @@ input, select, textarea {
   border-radius: var(--border-radius);
   background-color: var(--color-secondary);
   color: var(--color-text);
-  
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+
   /* Remove default input styles */
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -144,7 +176,12 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(26, 95, 26, 0.1);
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--color-text-light);
+  opacity: 0.7;
 }
 
 /* Container for mobile layout */

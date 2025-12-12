@@ -63,6 +63,7 @@ function AuthenticatedApp({ user, onSignOut }) {
               phase={matchState.phase}
               onSignOut={onSignOut}
               onEndMatch={isScoring ? resetMatch : undefined}
+              onShowShare={() => setShowShare(true)}
             />
           </div>
         </div>
@@ -88,7 +89,6 @@ function AuthenticatedApp({ user, onSignOut }) {
             onUpdateHoleResult={updateHoleResult}
             players={matchState.players}
             onShowStandings={() => setShowStandings(true)}
-            onShowShare={() => setShowShare(true)}
           />
         )}
 
