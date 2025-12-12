@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import PointsTable from './PointsTable.jsx';
 import PageLayout from './common/PageLayout.jsx';
-import ShareCodeDisplay from './match/ShareCodeDisplay.jsx';
 import { useTimeout } from '../hooks/useDebounce.js';
 
 /**
@@ -14,7 +12,8 @@ import { useTimeout } from '../hooks/useDebounce.js';
  * @param {Function} props.onNavigateToHole - Callback to navigate to a specific hole
  * @param {Function} props.onUpdateHoleResult - Callback to update results for a specific hole
  * @param {Player[]} props.players - Array of players for stats display
- * @param {string} props.userId - The authenticated user's ID (for share code display)
+ * @param {Function} props.onShowStandings - Callback to show standings overlay
+ * @param {Function} props.onShowShare - Callback to show share overlay
  */
 function HoleScoring({
   currentHole,
@@ -24,7 +23,8 @@ function HoleScoring({
   onNavigateToHole = () => {}, // Default empty function for tests
   onUpdateHoleResult = () => {}, // Default empty function for tests
   players,
-  userId
+  onShowStandings = () => {}, // Default empty function for tests
+  onShowShare = () => {} // Default empty function for tests
 }) {
   const [matchupResults, setMatchupResults] = useState([
     { ...matchups[0], result: matchups[0].result || null },
@@ -181,100 +181,105 @@ try {
 
   return (
     <PageLayout>
-        {/* Hole Header with Navigation */}
-        <div className="hole-header">
-          <div className="hole-navigation">
-            <button
-              type="button"
-              className="nav-button nav-button-prev"
-              onClick={handlePreviousHole}
-              disabled={currentHole === 1 || isSubmitting}
-            >
-              ← Previous
-            </button>
-            
-            <div className="hole-info">
-              <h2 className="hole-title">Hole {currentHole}</h2>
-            </div>
-            
-            <button
-              type="button"
-              className="nav-button nav-button-next"
-              onClick={handleNextHole}
-              disabled={!canNavigateNext() || isSubmitting}
-            >
-              Next →
-            </button>
+      {/* Hole Header with Navigation */}
+      <div className="hole-header">
+        <div className="hole-navigation">
+          <button
+            type="button"
+            className="nav-button nav-button-prev"
+            onClick={handlePreviousHole}
+            disabled={currentHole === 1 || isSubmitting}
+          >
+            ← Previous
+          </button>
+
+          <div className="hole-info">
+            <h2 className="hole-title">Hole {currentHole}</h2>
           </div>
-          
-          <div className="hole-progress">
-            <div className="progress-bar">
-              <div 
-                className="progress-fill" 
-                style={{ width: `${((currentHole - 1) / 18) * 100}%` }}
+
+          <button
+            type="button"
+            className="nav-button nav-button-next"
+            onClick={handleNextHole}
+            disabled={!canNavigateNext() || isSubmitting}
+          >
+            Next →
+          </button>
+        </div>
+
+        <div className="hole-progress">
+          <div className="progress-bar">
+            <div
+              className="progress-fill"
+              style={{ width: `${((currentHole - 1) / 18) * 100}%` }}
+            >
+              <img
+                src="./flag.png"
+                alt="Progress marker"
+                className="progress-flag"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Matchups */}
+      <div className="matchups-container">
+        {matchupResults.map((matchup, index) => (
+          <div key={index} className="matchup">
+            <div className="matchup-header">
+              <h3 className="matchup-title">Matchup {index + 1}</h3>
+            </div>
+
+            <div className="matchup-controls">
+              <button
+                type="button"
+                className={getButtonClass(matchup.result === 'player1')}
+                onClick={() => handleResultSelect(index, 'player1')}
+                disabled={isSubmitting}
               >
-                <img 
-                  src="./flag.png" 
-                  alt="Progress marker" 
-                  className="progress-flag"
-                />
-              </div>
+                {matchup.player1.name}
+              </button>
+
+              <button
+                type="button"
+                className={getButtonClass(matchup.result === 'draw')}
+                onClick={() => handleResultSelect(index, 'draw')}
+                disabled={isSubmitting}
+              >
+                Draw
+              </button>
+
+              <button
+                type="button"
+                className={getButtonClass(matchup.result === 'player2')}
+                onClick={() => handleResultSelect(index, 'player2')}
+                disabled={isSubmitting}
+              >
+                {matchup.player2.name}
+              </button>
             </div>
           </div>
-        </div>
+        ))}
+      </div>
 
-        {/* Matchups */}
-        <div className="matchups-container">
-          {matchupResults.map((matchup, index) => (
-            <div key={index} className="matchup">
-              <div className="matchup-header">
-                <h3 className="matchup-title">Matchup {index + 1}</h3>
-              </div>
-              
-              <div className="matchup-controls">
-                <button
-                  type="button"
-                  className={getButtonClass(matchup.result === 'player1')}
-                  onClick={() => handleResultSelect(index, 'player1')}
-                  disabled={isSubmitting}
-                >
-                  {matchup.player1.name}
-                </button>
-                
-                <button
-                  type="button"
-                  className={getButtonClass(matchup.result === 'draw')}
-                  onClick={() => handleResultSelect(index, 'draw')}
-                  disabled={isSubmitting}
-                >
-                  Draw
-                </button>
-                
-                <button
-                  type="button"
-                  className={getButtonClass(matchup.result === 'player2')}
-                  onClick={() => handleResultSelect(index, 'player2')}
-                  disabled={isSubmitting}
-                >
-                  {matchup.player2.name}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Current Standings */}
-        <div className="standings-card">
-          <h3 className="standings-title">Current Standings</h3>
-          <PointsTable
-            players={players}
-            currentHole={currentHole}
-            showWinnerHighlight={false}
-          />
-        </div>
-
-        {/* Share Code for Spectators */}
-        <ShareCodeDisplay userId={userId} />
+      {/* Action buttons */}
+      <div className="scoring-actions">
+        <button
+          type="button"
+          className="scoring-action-button"
+          onClick={onShowStandings}
+        >
+          Current Standings
+        </button>
+        <button
+          type="button"
+          className="scoring-action-button"
+          onClick={onShowShare}
+        >
+          Share Match
+        </button>
+      </div>
     </PageLayout>
   );
 }

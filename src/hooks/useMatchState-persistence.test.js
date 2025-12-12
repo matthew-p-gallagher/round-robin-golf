@@ -51,7 +51,8 @@ describe('useMatchState Persistence Integration', () => {
       currentHole: 3,
       phase: 'scoring',
       holeResults: [],
-      maxHoleReached: 3
+      maxHoleReached: 3,
+      shareCode: '1234'
     };
 
     // Mock Supabase to return saved state
@@ -100,7 +101,8 @@ describe('useMatchState Persistence Integration', () => {
         currentHole: 1,
         phase: 'setup',
         holeResults: [],
-        maxHoleReached: 1
+        maxHoleReached: 1,
+        shareCode: null
       });
     });
 
@@ -243,7 +245,8 @@ describe('useMatchState Persistence Integration', () => {
       currentHole: 3,
       phase: 'scoring',
       holeResults: [],
-      maxHoleReached: 3
+      maxHoleReached: 3,
+      shareCode: '1234'
     };
 
     // Mock Supabase to return saved state
@@ -284,7 +287,8 @@ describe('useMatchState Persistence Integration', () => {
       currentHole: 1,
       phase: 'setup',
       holeResults: [],
-      maxHoleReached: 1
+      maxHoleReached: 1,
+      shareCode: null
     });
   });
 
@@ -347,7 +351,8 @@ describe('useMatchState Persistence Integration', () => {
         currentHole: 1,
         phase: 'setup',
         holeResults: [],
-        maxHoleReached: 1
+        maxHoleReached: 1,
+        shareCode: null
       });
     }, { timeout: 3000 });
 
@@ -438,7 +443,8 @@ describe('useMatchState Persistence Integration', () => {
         }
         // ... more hole results would be here
       ],
-      maxHoleReached: 10
+      maxHoleReached: 10,
+      shareCode: '5678'
     };
 
     // Mock Supabase to return mid-game state

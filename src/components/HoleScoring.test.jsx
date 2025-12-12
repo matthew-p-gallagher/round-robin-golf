@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import HoleScoring from './HoleScoring.jsx';
 
@@ -48,33 +48,6 @@ describe('HoleScoring Component', () => {
     expect(screen.getByRole('button', { name: 'Bob' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Charlie' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'David' })).toBeInTheDocument();
-  });
-
-  it('displays current standings correctly', () => {
-    const mockOnRecordResults = vi.fn();
-
-    render(
-      <HoleScoring
-        currentHole={5}
-        matchups={mockMatchups}
-        onRecordResults={mockOnRecordResults}
-        players={mockPlayers}
-      />
-    );
-
-    // Check standings table headers
-    expect(screen.getByText('Current Standings')).toBeInTheDocument();
-    expect(screen.getByText('Player')).toBeInTheDocument();
-    expect(screen.getByText('Thru')).toBeInTheDocument();
-    expect(screen.getByText('Points')).toBeInTheDocument();
-    expect(screen.getByText('W')).toBeInTheDocument();
-    expect(screen.getByText('D')).toBeInTheDocument();
-    expect(screen.getByText('L')).toBeInTheDocument();
-
-    // Check that Alice is first (highest points) in the standings table
-    const standingsTable = screen.getByText('Current Standings').closest('div');
-    const aliceInStandings = within(standingsTable).getByText('Alice');
-    expect(aliceInStandings).toBeInTheDocument();
   });
 
   it('allows selecting matchup results', () => {

@@ -8,7 +8,8 @@ export const INITIAL_STATE = {
   currentHole: 1,
   phase: 'setup',
   holeResults: [],
-  maxHoleReached: 1
+  maxHoleReached: 1,
+  shareCode: null
 };
 
 /**
@@ -20,7 +21,8 @@ export const ACTIONS = {
   NAVIGATE_TO_HOLE: 'NAVIGATE_TO_HOLE',
   UPDATE_HOLE_RESULT: 'UPDATE_HOLE_RESULT',
   RESET_MATCH: 'RESET_MATCH',
-  LOAD_MATCH: 'LOAD_MATCH'
+  LOAD_MATCH: 'LOAD_MATCH',
+  SET_SHARE_CODE: 'SET_SHARE_CODE'
 };
 
 /**
@@ -40,7 +42,8 @@ export function matchReducer(state, action) {
         currentHole: 1,
         phase: 'scoring',
         holeResults: [],
-        maxHoleReached: 1
+        maxHoleReached: 1,
+        shareCode: null
       };
     }
 
@@ -111,7 +114,19 @@ export function matchReducer(state, action) {
 
     case ACTIONS.LOAD_MATCH: {
       const { matchState } = action.payload;
-      return matchState;
+      // Ensure shareCode field exists for backward compatibility
+      return {
+        ...matchState,
+        shareCode: matchState.shareCode || null
+      };
+    }
+
+    case ACTIONS.SET_SHARE_CODE: {
+      const { shareCode } = action.payload;
+      return {
+        ...state,
+        shareCode
+      };
     }
 
     default:

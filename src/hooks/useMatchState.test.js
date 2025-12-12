@@ -19,13 +19,14 @@ describe('useMatchState', () => {
   describe('Initial State', () => {
     it('should initialize with correct default state', () => {
       const { result } = renderHook(() => useMatchState());
-      
+
       expect(result.current.matchState).toEqual({
         players: [],
         currentHole: 1,
         phase: 'setup',
         holeResults: [],
-        maxHoleReached: 1
+        maxHoleReached: 1,
+        shareCode: null
       });
     });
   });
@@ -388,7 +389,8 @@ describe('useMatchState', () => {
         currentHole: 1,
         phase: 'setup',
         holeResults: [],
-        maxHoleReached: 1
+        maxHoleReached: 1,
+        shareCode: null
       });
     });
   });

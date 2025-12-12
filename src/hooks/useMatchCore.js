@@ -189,6 +189,14 @@ export function useMatchCore() {
   };
 
   /**
+   * Set the share code for the current match
+   * @param {string} shareCode - The share code to set
+   */
+  const setShareCode = useCallback((shareCode) => {
+    dispatch({ type: ACTIONS.SET_SHARE_CODE, payload: { shareCode } });
+  }, []);
+
+  /**
    * Get the matchups for a specific hole
    * @param {number} holeNumber - Hole number (1-18)
    * @returns {[Matchup, Matchup]} Array of 2 matchups for the specified hole
@@ -226,6 +234,7 @@ export function useMatchCore() {
     navigateToHole,
     updateHoleResult,
     recalculateStatsFromHole,
-    getMatchupsForHole
+    getMatchupsForHole,
+    setShareCode
   };
 }

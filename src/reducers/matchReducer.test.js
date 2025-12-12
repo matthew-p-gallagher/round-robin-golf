@@ -14,7 +14,8 @@ describe('matchReducer', () => {
         currentHole: 1,
         phase: 'setup',
         holeResults: [],
-        maxHoleReached: 1
+        maxHoleReached: 1,
+        shareCode: null
       })
     })
   })
@@ -488,7 +489,8 @@ describe('matchReducer', () => {
           { holeNumber: 1, matchups: [] },
           { holeNumber: 2, matchups: [] }
         ],
-        maxHoleReached: 5
+        maxHoleReached: 5,
+        shareCode: '1234'
       }
 
       const action = {
@@ -507,7 +509,8 @@ describe('matchReducer', () => {
         currentHole: 1,
         phase: 'setup',
         holeResults: [],
-        maxHoleReached: 1
+        maxHoleReached: 1,
+        shareCode: null
       }
 
       const loadedState = {
@@ -515,7 +518,8 @@ describe('matchReducer', () => {
         currentHole: 10,
         phase: 'scoring',
         holeResults: [],
-        maxHoleReached: 10
+        maxHoleReached: 10,
+        shareCode: '5678'
       }
 
       const action = {
@@ -526,6 +530,25 @@ describe('matchReducer', () => {
       const newState = matchReducer(currentState, action)
 
       expect(newState).toEqual(loadedState)
+    })
+
+    it('should add shareCode null for backward compatibility when not present', () => {
+      const loadedStateWithoutShareCode = {
+        players: [{ name: 'Test', points: 0, wins: 0, draws: 0, losses: 0 }],
+        currentHole: 1,
+        phase: 'setup',
+        holeResults: [],
+        maxHoleReached: 1
+      }
+
+      const action = {
+        type: ACTIONS.LOAD_MATCH,
+        payload: { matchState: loadedStateWithoutShareCode }
+      }
+
+      const newState = matchReducer(INITIAL_STATE, action)
+
+      expect(newState.shareCode).toBe(null)
     })
   })
 

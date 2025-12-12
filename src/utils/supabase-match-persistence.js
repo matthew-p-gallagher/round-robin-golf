@@ -191,6 +191,11 @@ function isValidMatchState(state) {
       return false
     }
   }
-  
+
+  // Validate shareCode if present (optional field for backward compatibility)
+  if (state.shareCode !== undefined && state.shareCode !== null && typeof state.shareCode !== 'string') {
+    return false
+  }
+
   return true
 }

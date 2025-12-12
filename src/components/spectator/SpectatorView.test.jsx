@@ -4,7 +4,6 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '../../test/test-utils.jsx'
-import userEvent from '@testing-library/user-event'
 import SpectatorView from './SpectatorView.jsx'
 
 // Mock react-router-dom's useParams
@@ -260,41 +259,6 @@ describe('SpectatorView', () => {
       render(<SpectatorView />)
 
       expect(screen.getByText(/Updated/)).toBeInTheDocument()
-    })
-  })
-
-  describe('Refresh functionality', () => {
-    it('should show refresh button', () => {
-      useSpectatorMatch.mockReturnValue({
-        matchData: createMockMatchData(),
-        loading: false,
-        error: null,
-        lastUpdated: new Date(),
-        refresh: vi.fn()
-      })
-
-      render(<SpectatorView />)
-
-      expect(screen.getByRole('button', { name: 'Refresh Now' })).toBeInTheDocument()
-    })
-
-    it('should call refresh when button clicked', async () => {
-      const mockRefresh = vi.fn()
-      const user = userEvent.setup()
-
-      useSpectatorMatch.mockReturnValue({
-        matchData: createMockMatchData(),
-        loading: false,
-        error: null,
-        lastUpdated: new Date(),
-        refresh: mockRefresh
-      })
-
-      render(<SpectatorView />)
-
-      await user.click(screen.getByRole('button', { name: 'Refresh Now' }))
-
-      expect(mockRefresh).toHaveBeenCalledTimes(1)
     })
   })
 

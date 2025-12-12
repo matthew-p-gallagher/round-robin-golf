@@ -283,10 +283,10 @@ describe('App', () => {
       useAuth.mockReturnValue(mockUseAuth)
     })
 
-    it('should display user email in header', () => {
+    it('should display logo in header', () => {
       render(<App />)
 
-      expect(screen.getByText('test@example.com')).toBeInTheDocument()
+      expect(screen.getByAltText('RRG Logo')).toBeInTheDocument()
     })
 
     it('should display Round Robin Golf title', () => {
@@ -295,18 +295,32 @@ describe('App', () => {
       expect(screen.getByText('Round Robin Golf')).toBeInTheDocument()
     })
 
-    it('should have sign out button', () => {
+    it('should have burger menu with sign out option', async () => {
+      const user = userEvent.setup()
       render(<App />)
+
+      // Open burger menu
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      await user.click(menuButton)
 
       expect(screen.getByText('Sign Out')).toBeInTheDocument()
     })
 
-    it('should call signOut when sign out button clicked', async () => {
+    it('should call signOut when sign out confirmed in menu', async () => {
       const user = userEvent.setup()
       render(<App />)
 
+      // Open burger menu
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      await user.click(menuButton)
+
+      // First click - shows "Are you sure?"
       const signOutButton = screen.getByText('Sign Out')
       await user.click(signOutButton)
+
+      // Second click - confirms sign out
+      const confirmButton = screen.getByText('Are you sure?')
+      await user.click(confirmButton)
 
       expect(mockUseAuth.signOut).toHaveBeenCalledTimes(1)
     })
@@ -319,8 +333,17 @@ describe('App', () => {
 
       render(<App />)
 
+      // Open burger menu
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      await user.click(menuButton)
+
+      // First click - shows "Are you sure?"
       const signOutButton = screen.getByText('Sign Out')
       await user.click(signOutButton)
+
+      // Second click - confirms sign out
+      const confirmButton = screen.getByText('Are you sure?')
+      await user.click(confirmButton)
 
       expect(consoleError).toHaveBeenCalledWith('Error signing out:', expect.any(Error))
 

@@ -19,7 +19,7 @@ function formatTime(date) {
  */
 export default function SpectatorView() {
   const { code } = useParams()
-  const { matchData, loading, error, lastUpdated, refresh } = useSpectatorMatch(code)
+  const { matchData, loading, error, lastUpdated } = useSpectatorMatch(code)
 
   // Loading state
   if (loading) {
@@ -143,15 +143,8 @@ export default function SpectatorView() {
             </div>
           )}
 
-          {/* Refresh and navigation */}
+          {/* Navigation */}
           <div className="spectator-footer">
-            <button
-              type="button"
-              className="refresh-button"
-              onClick={refresh}
-            >
-              Refresh Now
-            </button>
             <Link to="/view" className="link-button">
               View Different Match
             </Link>

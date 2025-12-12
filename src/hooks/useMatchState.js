@@ -22,7 +22,8 @@ export function useMatchState(user) {
     navigateToHole,
     updateHoleResult,
     recalculateStatsFromHole,
-    getMatchupsForHole
+    getMatchupsForHole,
+    setShareCode
   } = useMatchCore();
 
   // Persistence layer
@@ -68,6 +69,7 @@ export function useMatchState(user) {
     navigateToHole,
     updateHoleResult,
     recalculateStatsFromHole,
-    getMatchupsForHole
+    getMatchupsForHole,
+    setShareCode
   };
 }

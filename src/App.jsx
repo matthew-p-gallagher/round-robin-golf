@@ -14,6 +14,9 @@ import ErrorMessage from './components/common/ErrorMessage.jsx'
 import LoadingSpinner from './components/common/LoadingSpinner.jsx'
 import ShareCodeEntry from './components/spectator/ShareCodeEntry.jsx'
 import SpectatorView from './components/spectator/SpectatorView.jsx'
+import BurgerMenu from './components/match/BurgerMenu.jsx'
+import StandingsOverlay from './components/match/StandingsOverlay.jsx'
+import ShareMatchOverlay from './components/match/ShareMatchOverlay.jsx'
 
 /**
  * Authenticated app flow - handles match management for logged-in users
@@ -29,8 +32,13 @@ function AuthenticatedApp({ user, onSignOut }) {
     canResumeMatch,
     navigateToHole,
     updateHoleResult,
-    getMatchupsForHole
+    getMatchupsForHole,
+    setShareCode
   } = useMatchState(user);
+
+  // Overlay states for standings and share
+  const [showStandings, setShowStandings] = useState(false);
+  const [showShare, setShowShare] = useState(false);
 
   if (matchLoading) {
     return (
@@ -42,16 +50,20 @@ function AuthenticatedApp({ user, onSignOut }) {
     )
   }
 
+  const isScoring = matchState.phase === 'scoring';
+
   return (
     <div className="app">
       <header className="app-header">
         <div className="header-content">
           <h1>Round Robin Golf</h1>
           <div className="user-info">
-            <span>{user.email}</span>
-            <button onClick={onSignOut} className="sign-out-button">
-              Sign Out
-            </button>
+            <img src="./RRGLogo.png" alt="RRG Logo" className="header-logo" />
+            <BurgerMenu
+              phase={matchState.phase}
+              onSignOut={onSignOut}
+              onEndMatch={isScoring ? resetMatch : undefined}
+            />
           </div>
         </div>
       </header>
@@ -75,7 +87,8 @@ function AuthenticatedApp({ user, onSignOut }) {
             onNavigateToHole={navigateToHole}
             onUpdateHoleResult={updateHoleResult}
             players={matchState.players}
-            userId={user.id}
+            onShowStandings={() => setShowStandings(true)}
+            onShowShare={() => setShowShare(true)}
           />
         )}
 
@@ -86,6 +99,25 @@ function AuthenticatedApp({ user, onSignOut }) {
           />
         )}
       </main>
+
+      {/* Standings Overlay */}
+      {showStandings && (
+        <StandingsOverlay
+          players={matchState.players}
+          currentHole={matchState.currentHole}
+          onClose={() => setShowStandings(false)}
+        />
+      )}
+
+      {/* Share Match Overlay */}
+      {showShare && (
+        <ShareMatchOverlay
+          userId={user.id}
+          shareCode={matchState.shareCode}
+          onShareCodeCreated={setShareCode}
+          onClose={() => setShowShare(false)}
+        />
+      )}
     </div>
   )
 }
