@@ -15,7 +15,7 @@ import LoadingSpinner from './components/common/LoadingSpinner.jsx'
 import ShareCodeEntry from './components/spectator/ShareCodeEntry.jsx'
 import SpectatorView from './components/spectator/SpectatorView.jsx'
 import BurgerMenu from './components/match/BurgerMenu.jsx'
-import StandingsOverlay from './components/match/StandingsOverlay.jsx'
+import StandingsSheet from './components/match/StandingsSheet.jsx'
 import ShareMatchOverlay from './components/match/ShareMatchOverlay.jsx'
 
 /**
@@ -100,14 +100,13 @@ function AuthenticatedApp({ user, onSignOut }) {
         )}
       </main>
 
-      {/* Standings Overlay */}
-      {showStandings && (
-        <StandingsOverlay
-          players={matchState.players}
-          currentHole={matchState.currentHole}
-          onClose={() => setShowStandings(false)}
-        />
-      )}
+      {/* Standings Bottom Sheet */}
+      <StandingsSheet
+        isOpen={showStandings}
+        players={matchState.players}
+        currentHole={matchState.currentHole}
+        onClose={() => setShowStandings(false)}
+      />
 
       {/* Share Match Overlay */}
       {showShare && (

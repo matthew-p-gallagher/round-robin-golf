@@ -261,16 +261,15 @@ try {
         ))}
       </div>
 
-      {/* Quick actions bar */}
-      <div className="quick-actions">
-        <button
-          type="button"
-          className="quick-action-button quick-action-primary"
-          onClick={onShowStandings}
-        >
-          Points Table
-        </button>
-      </div>
+      {/* Floating Action Button for standings */}
+      <button
+        type="button"
+        className="fab"
+        onClick={onShowStandings}
+        aria-label="View standings"
+      >
+        Points Table
+      </button>
     </PageLayout>
   );
 }
