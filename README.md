@@ -2,7 +2,10 @@
 
 A mobile-first web app for tracking a novel golf format.
 
-![alt text](main-scoring.png)
+<img width="335" height="719" alt="image" src="https://github.com/user-attachments/assets/e3241334-6061-4b8c-860b-f9de6858050d" />
+<img width="338" height="719" alt="image" src="https://github.com/user-attachments/assets/cac0d95a-62dd-4e19-a7cb-e55604cc5851" />
+
+
 
 ## Match Format
 
