@@ -47,7 +47,7 @@ test.describe('Email Verification', () => {
       // Given I have an unverified email account
       // When I navigate to the login page
       await page.goto('/');
-      await page.waitForSelector('h1:has-text("Welcome Back")');
+      await page.waitForSelector('h1:has-text("Round Robin Golf")');
 
       // And I enter my unverified email credentials
       await page.fill('input[type="email"]', unverifiedEmail);
@@ -69,7 +69,7 @@ test.describe('Email Verification', () => {
       expect(headerVisible).toBe(false);
 
       // Should still be on login page or verification prompt
-      const isOnLoginOrVerification = await page.locator('h1:has-text("Welcome Back"), h1:has-text("Verify")').isVisible();
+      const isOnLoginOrVerification = await page.locator('h1:has-text("Round Robin Golf"), h1:has-text("Verify")').isVisible();
       expect(isOnLoginOrVerification).toBe(true);
     });
 
@@ -232,13 +232,13 @@ test.describe('Email Verification', () => {
 
       // When I navigate to login
       await page.goto('/');
-      await page.waitForSelector('h1:has-text("Welcome Back")');
+      await page.waitForSelector('h1:has-text("Round Robin Golf")');
 
       // And I enter my credentials
       await page.fill('input[type="email"]', verifiedEmail);
       await page.fill('input[type="password"]', verifiedPassword);
 
-      // And I click sign in
+      // And I click log in
       await page.click('button:has-text("Log In")');
 
       // Then I should be logged in successfully
@@ -264,7 +264,7 @@ test.describe('Email Verification', () => {
       await backButton.first().click();
 
       // Then I should be on the login page
-      await expect(page.locator('h1')).toContainText('Welcome Back');
+      await expect(page.locator('h1')).toContainText('Round Robin Golf');
       await expect(page.locator('input[type="email"]')).toBeVisible();
     });
   });

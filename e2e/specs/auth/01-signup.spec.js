@@ -15,12 +15,12 @@ test.describe('First-Time Signup', () => {
   test.beforeEach(async ({ page }) => {
     // Start at login page
     await page.goto('/');
-    await page.waitForSelector('h1:has-text("Welcome Back")');
+    await page.waitForSelector('h1:has-text("Round Robin Golf")');
   });
 
   test('should navigate to signup form from login', async ({ page }) => {
     // Given I am on the login page
-    await expect(page.locator('h1')).toContainText('Welcome Back');
+    await expect(page.locator('h1')).toContainText('Round Robin Golf');
 
     // When I click the "Sign up" link
     await page.click('text=Sign up');
@@ -119,7 +119,7 @@ test.describe('First-Time Signup', () => {
     await page.click('text=Sign in');
 
     // Then I should be taken back to the login page
-    await expect(page.locator('h1')).toContainText('Welcome Back');
+    await expect(page.locator('h1')).toContainText('Round Robin Golf');
 
     // And all form fields should be empty
     await expect(page.locator('input[type="email"]')).toHaveValue('');

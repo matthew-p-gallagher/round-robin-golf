@@ -27,7 +27,7 @@ export default function Login({ onShowSignup, onShowResetPassword }) {
     try {
       await signIn(email, password)
     } catch (err) {
-      setError(err.message || 'Failed to sign in')
+      setError(err.message || 'Failed to log in')
     } finally {
       setLoading(false)
     }
@@ -35,8 +35,8 @@ export default function Login({ onShowSignup, onShowResetPassword }) {
 
   return (
     <AuthLayout
-      title="Log In"
-      subtitle="Track your 4-player golf matches"
+      title="Round Robin Golf"
+      subtitle="Find your format..."
     >
       <form onSubmit={handleSubmit} className="auth-form">
           <EmailInput

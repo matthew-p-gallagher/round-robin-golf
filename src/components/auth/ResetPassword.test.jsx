@@ -38,7 +38,7 @@ describe('ResetPassword', () => {
       expect(screen.getByRole('button', { name: /send reset link/i })).toBeInTheDocument()
     })
 
-    it('should render back to sign in link', () => {
+    it('should render back to log in link', () => {
       render(<ResetPassword onShowLogin={mockOnShowLogin} />)
 
       expect(screen.getByText('Back to Log In')).toBeInTheDocument()
@@ -217,7 +217,7 @@ describe('ResetPassword', () => {
   })
 
   describe('Navigation', () => {
-    it('should call onShowLogin when back to sign in link clicked', async () => {
+    it('should call onShowLogin when back to log in link clicked', async () => {
       const user = userEvent.setup({ delay: null })
       render(<ResetPassword onShowLogin={mockOnShowLogin} />)
 

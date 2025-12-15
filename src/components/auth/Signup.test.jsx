@@ -40,7 +40,7 @@ describe('Signup', () => {
       expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument()
     })
 
-    it('should render sign in link', () => {
+    it('should render log in link', () => {
       render(<Signup onShowLogin={mockOnShowLogin} />)
 
       expect(screen.getByText('Sign in')).toBeInTheDocument()
@@ -341,7 +341,7 @@ describe('Signup', () => {
   })
 
   describe('Navigation', () => {
-    it('should call onShowLogin when sign in link clicked', async () => {
+    it('should call onShowLogin when log in link clicked', async () => {
       const user = userEvent.setup()
       render(<Signup onShowLogin={mockOnShowLogin} />)
 

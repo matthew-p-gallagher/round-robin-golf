@@ -85,7 +85,7 @@ describe('SpectatorView', () => {
       expect(screen.getByRole('link', { name: 'Try Different Code' })).toBeInTheDocument()
     })
 
-    it('should show sign in link on error', () => {
+    it('should show log in link on error', () => {
       useSpectatorMatch.mockReturnValue({
         matchData: null,
         loading: false,

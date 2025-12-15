@@ -45,7 +45,7 @@ describe('ShareCodeEntry', () => {
       expect(screen.getByRole('button', { name: 'View Standings' })).toBeInTheDocument()
     })
 
-    it('should render sign in link', () => {
+    it('should render log in link', () => {
       render(<ShareCodeEntry />)
 
       expect(screen.getByText('Have an account?')).toBeInTheDocument()

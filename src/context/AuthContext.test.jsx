@@ -200,7 +200,7 @@ describe('AuthContext', () => {
   })
 
   describe('signIn', () => {
-    it('should sign in successfully and update user state', async () => {
+    it('should log in successfully and update user state', async () => {
       const mockUser = createMockUser()
       const mockSession = createMockSession(mockUser)
       const email = 'test@example.com'

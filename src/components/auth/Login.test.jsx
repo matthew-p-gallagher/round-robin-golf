@@ -34,11 +34,11 @@ describe('Login', () => {
     it('should render login form with all elements', () => {
       render(<Login onShowSignup={mockOnShowSignup} onShowResetPassword={mockOnShowResetPassword} />)
 
-      expect(screen.getByText('Welcome Back')).toBeInTheDocument()
-      expect(screen.getByText('Sign in to continue your golf matches')).toBeInTheDocument()
+      expect(screen.getByText('Round Robin Golf')).toBeInTheDocument()
+      expect(screen.getByText('Find your format...')).toBeInTheDocument()
       expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument()
     })
 
     it('should render forgot password link', () => {
@@ -61,7 +61,7 @@ describe('Login', () => {
 
       // Find the form and trigger submit directly to bypass HTML5 validation
       const form = container.querySelector('form')
-      await user.click(screen.getByRole('button', { name: /sign in/i }))
+      await user.click(screen.getByRole('button', { name: /log in/i }))
       // Manually trigger submit event
       form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
 
@@ -118,7 +118,7 @@ describe('Login', () => {
       await user.type(emailInput, 'test@example.com')
       await user.type(passwordInput, 'password123')
 
-      const submitButton = screen.getByRole('button', { name: /sign in/i })
+      const submitButton = screen.getByRole('button', { name: /log in/i })
       await user.click(submitButton)
 
       await waitFor(() => {
@@ -126,7 +126,7 @@ describe('Login', () => {
       })
     })
 
-    it('should show loading state during sign in', async () => {
+    it('should show loading state during log in', async () => {
       const user = userEvent.setup()
       let resolveSignIn
       mockSignIn.mockReturnValue(new Promise(resolve => { resolveSignIn = resolve }))
@@ -138,7 +138,7 @@ describe('Login', () => {
       await user.type(emailInput, 'test@example.com')
       await user.type(passwordInput, 'password123')
 
-      const submitButton = screen.getByRole('button', { name: /sign in/i })
+      const submitButton = screen.getByRole('button', { name: /log in/i })
       await user.click(submitButton)
 
       // Should show loading text
@@ -165,7 +165,7 @@ describe('Login', () => {
       await user.type(emailInput, 'test@example.com')
       await user.type(passwordInput, 'password123')
 
-      const submitButton = screen.getByRole('button', { name: /sign in/i })
+      const submitButton = screen.getByRole('button', { name: /log in/i })
       await user.click(submitButton)
 
       // Check disabled state
@@ -205,7 +205,7 @@ describe('Login', () => {
       await user.type(emailInput, 'test@example.com')
       await user.type(passwordInput, 'password123')
 
-      const submitButton = screen.getByRole('button', { name: /sign in/i })
+      const submitButton = screen.getByRole('button', { name: /log in/i })
       await user.click(submitButton)
 
       // Error should be cleared
@@ -216,7 +216,7 @@ describe('Login', () => {
   })
 
   describe('Error handling', () => {
-    it('should show error message on sign in failure', async () => {
+    it('should show error message on log in failure', async () => {
       const user = userEvent.setup()
       mockSignIn.mockRejectedValue(new Error('Invalid credentials'))
 
@@ -227,7 +227,7 @@ describe('Login', () => {
       await user.type(emailInput, 'test@example.com')
       await user.type(passwordInput, 'wrong-password')
 
-      const submitButton = screen.getByRole('button', { name: /sign in/i })
+      const submitButton = screen.getByRole('button', { name: /log in/i })
       await user.click(submitButton)
 
       await waitFor(() => {
@@ -246,11 +246,11 @@ describe('Login', () => {
       await user.type(emailInput, 'test@example.com')
       await user.type(passwordInput, 'password123')
 
-      const submitButton = screen.getByRole('button', { name: /sign in/i })
+      const submitButton = screen.getByRole('button', { name: /log in/i })
       await user.click(submitButton)
 
       await waitFor(() => {
-        expect(screen.getByText('Failed to sign in')).toBeInTheDocument()
+        expect(screen.getByText('Failed to log in')).toBeInTheDocument()
       })
     })
   })
