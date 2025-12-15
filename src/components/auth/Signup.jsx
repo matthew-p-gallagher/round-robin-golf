@@ -57,7 +57,7 @@ export default function Signup({ onShowLogin }) {
       {success ? (
         <SuccessMessage
           message={success}
-          action="Back to Sign In"
+          action="Back to Log In"
           onAction={onShowLogin}
         />
       ) : (

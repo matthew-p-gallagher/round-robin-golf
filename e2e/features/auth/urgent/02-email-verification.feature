@@ -51,7 +51,7 @@ Feature: Email Verification
     When I navigate to the login page
     And I enter "newuser@example.com" in the email field
     And I enter my password in the password field
-    And I click the "Sign In" button
+    And I click the "Log In" button
     Then I should see a warning message "Please verify your email address"
     And I should see a "Resend verification email" link
     And I should not be logged in

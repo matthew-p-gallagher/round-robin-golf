@@ -13,7 +13,7 @@ Feature: Forgot Password (Initiate Reset)
     And I should see instructions "Enter your email to receive a password reset link"
     And I should see an email input field
     And I should see a "Send Reset Link" button
-    And I should see a "Back to Sign In" link
+    And I should see a "Back to Log In" link
 
   Scenario: Successful password reset request
     Given I am on the password reset page
@@ -22,7 +22,7 @@ Feature: Forgot Password (Initiate Reset)
     Then I should see a loading indicator
     And I should see a success message "Password reset email sent! Check your inbox."
     And I should see a reminder to check my spam folder
-    And I should see a "Back to Sign In" button
+    And I should see a "Back to Log In" button
     And a password reset email should be sent to "user@example.com"
     And the email should contain a reset link with a token
 
@@ -50,7 +50,7 @@ Feature: Forgot Password (Initiate Reset)
 
   Scenario: Return to login from password reset
     Given I am on the password reset page
-    When I click the "Back to Sign In" link
+    When I click the "Back to Log In" link
     Then I should be taken to the login page
     And all form fields should be cleared
 

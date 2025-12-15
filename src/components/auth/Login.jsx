@@ -35,8 +35,8 @@ export default function Login({ onShowSignup, onShowResetPassword }) {
 
   return (
     <AuthLayout
-      title="Welcome Back"
-      subtitle="Sign in to continue your golf matches"
+      title="Log In"
+      subtitle="Track your 4-player golf matches"
     >
       <form onSubmit={handleSubmit} className="auth-form">
           <EmailInput
@@ -67,7 +67,7 @@ export default function Login({ onShowSignup, onShowResetPassword }) {
             className="auth-button primary"
             disabled={loading}
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Signing in...' : 'Log In'}
           </button>
       </form>
 

@@ -49,7 +49,7 @@ export default function SpectatorView() {
                 Try Different Code
               </Link>
               <Link to="/" className="link-button">
-                Sign In
+                Log In
               </Link>
             </div>
           </div>

@@ -55,7 +55,7 @@ export async function fillFormByRole(user, fields) {
  * @returns {Promise<void>}
  *
  * @example
- * await submitForm(user, 'Sign In')
+ * await submitForm(user, 'Log In')
  * await submitForm(user, /submit/i, { timeout: 2000 })
  */
 export async function submitForm(user, buttonText, options = {}) {
@@ -176,7 +176,7 @@ export function expectInputEmpty(labelText) {
  * @param {string} buttonText - Button text or regex
  *
  * @example
- * expectSubmitDisabled('Sign In')
+ * expectSubmitDisabled('Log In')
  */
 export function expectSubmitDisabled(buttonText) {
   const button = typeof buttonText === 'string'
@@ -191,7 +191,7 @@ export function expectSubmitDisabled(buttonText) {
  * @param {string} buttonText - Button text or regex
  *
  * @example
- * expectSubmitEnabled('Sign In')
+ * expectSubmitEnabled('Log In')
  */
 export function expectSubmitEnabled(buttonText) {
   const button = typeof buttonText === 'string'

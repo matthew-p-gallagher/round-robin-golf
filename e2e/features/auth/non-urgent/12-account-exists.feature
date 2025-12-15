@@ -13,12 +13,12 @@ Feature: Account Already Exists
     And I click "Create Account"
     Then I should see an error message "An account with this email already exists"
     And I should see a suggestion "Already have an account?"
-    And I should see a link or button to "Go to Sign In"
+    And I should see a link or button to "Go to Log In"
 
   Scenario: Quick navigation to login from account exists error
     Given I am on the signup page
     And I see the "account already exists" error
-    When I click the "Go to Sign In" link
+    When I click the "Go to Log In" link
     Then I should be taken to the login page
     And the email field should be pre-filled with "existing@example.com"
     And the password field should be empty and focused

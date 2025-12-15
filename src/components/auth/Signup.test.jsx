@@ -370,11 +370,11 @@ describe('Signup', () => {
 
       // Wait for success message
       await waitFor(() => {
-        expect(screen.getByText('Back to Sign In')).toBeInTheDocument()
+        expect(screen.getByText('Back to Log In')).toBeInTheDocument()
       })
 
-      // Click the Back to Sign In button
-      const backButton = screen.getByText('Back to Sign In')
+      // Click the Back to Log In button
+      const backButton = screen.getByText('Back to Log In')
       await user.click(backButton)
 
       expect(mockOnShowLogin).toHaveBeenCalledTimes(1)

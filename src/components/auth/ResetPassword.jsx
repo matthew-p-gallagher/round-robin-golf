@@ -42,7 +42,7 @@ export default function ResetPassword({ onShowLogin }) {
       {success ? (
         <SuccessMessage
           message={success}
-          action="Back to Sign In"
+          action="Back to Log In"
           onAction={onShowLogin}
         />
       ) : (
@@ -76,7 +76,7 @@ export default function ResetPassword({ onShowLogin }) {
             onClick={onShowLogin}
             disabled={loading}
           >
-            Back to Sign In
+            Back to Log In
           </button>
         </div>
     </AuthLayout>

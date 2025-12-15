@@ -13,7 +13,7 @@ Feature: Repeat Login (Returning User)
     Given I have no saved match data
     When I enter "returninguser@example.com" in the email field
     And I enter my password in the password field
-    And I click the "Sign In" button
+    And I click the "Log In" button
     Then I should see a loading indicator
     And I should be redirected to the match setup page
     And I should see my email in the header
@@ -25,7 +25,7 @@ Feature: Repeat Login (Returning User)
     And the match is on hole 5
     When I enter "returninguser@example.com" in the email field
     And I enter my password in the password field
-    And I click the "Sign In" button
+    And I click the "Log In" button
     Then I should see a loading indicator while match data is fetched
     And I should be redirected to the match setup page
     And I should see my email in the header
@@ -62,6 +62,6 @@ Feature: Repeat Login (Returning User)
   Scenario: Login shows welcome back message
     When I enter "returninguser@example.com" in the email field
     And I enter my password in the password field
-    And I click the "Sign In" button
+    And I click the "Log In" button
     Then I should see a "Welcome back" message
     And I should see when I last accessed the app (if tracked)

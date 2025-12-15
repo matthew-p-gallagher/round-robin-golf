@@ -37,7 +37,7 @@ export const test = base.extend({
     await page.fill('input[type="password"]', TEST_USER_PASSWORD);
 
     // Click login button
-    await page.click('button:has-text("Sign In")');
+    await page.click('button:has-text("Log In")');
 
     // Wait for successful login (header with email should appear)
     await page.waitForSelector('header');

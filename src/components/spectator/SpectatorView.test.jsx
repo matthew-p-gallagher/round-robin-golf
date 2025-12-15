@@ -96,7 +96,7 @@ describe('SpectatorView', () => {
 
       render(<SpectatorView />)
 
-      expect(screen.getByRole('link', { name: 'Sign In' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Log In' })).toBeInTheDocument()
     })
   })
 

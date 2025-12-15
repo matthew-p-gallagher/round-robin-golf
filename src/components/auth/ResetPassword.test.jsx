@@ -41,7 +41,7 @@ describe('ResetPassword', () => {
     it('should render back to sign in link', () => {
       render(<ResetPassword onShowLogin={mockOnShowLogin} />)
 
-      expect(screen.getByText('Back to Sign In')).toBeInTheDocument()
+      expect(screen.getByText('Back to Log In')).toBeInTheDocument()
     })
 
     it('should show success message after successful reset', async () => {
@@ -139,7 +139,7 @@ describe('ResetPassword', () => {
       // Check disabled state
       expect(emailInput).toBeDisabled()
       expect(submitButton).toBeDisabled()
-      expect(screen.getByText('Back to Sign In')).toBeDisabled()
+      expect(screen.getByText('Back to Log In')).toBeDisabled()
 
       // Resolve the promise
       resolveReset({})
@@ -221,7 +221,7 @@ describe('ResetPassword', () => {
       const user = userEvent.setup({ delay: null })
       render(<ResetPassword onShowLogin={mockOnShowLogin} />)
 
-      const backLink = screen.getByText('Back to Sign In')
+      const backLink = screen.getByText('Back to Log In')
       await user.click(backLink)
 
       expect(mockOnShowLogin).toHaveBeenCalledTimes(1)
@@ -245,8 +245,8 @@ describe('ResetPassword', () => {
         expect(screen.getByText(/password reset email sent/i)).toBeInTheDocument()
       })
 
-      // Click the Back to Sign In button from success message (primary button, first one)
-      const backButtons = screen.getAllByRole('button', { name: 'Back to Sign In' })
+      // Click the Back to Log In button from success message (primary button, first one)
+      const backButtons = screen.getAllByRole('button', { name: 'Back to Log In' })
       await user.click(backButtons[0])
 
       expect(mockOnShowLogin).toHaveBeenCalledTimes(1)

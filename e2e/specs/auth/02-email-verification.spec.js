@@ -53,8 +53,8 @@ test.describe('Email Verification', () => {
       await page.fill('input[type="email"]', unverifiedEmail);
       await page.fill('input[type="password"]', unverifiedPassword);
 
-      // And I click the "Sign In" button
-      await page.click('button:has-text("Sign In")');
+      // And I click the "Log In" button
+      await page.click('button:has-text("Log In")');
 
       // Then I should see a warning message about email verification
       await expect(page.locator('.auth-error, .auth-warning')).toBeVisible({ timeout: 10000 });
@@ -79,7 +79,7 @@ test.describe('Email Verification', () => {
       await page.goto('/');
       await page.fill('input[type="email"]', unverifiedEmail);
       await page.fill('input[type="password"]', unverifiedPassword);
-      await page.click('button:has-text("Sign In")');
+      await page.click('button:has-text("Log In")');
 
       // Then I should see a resend verification option
       await expect(page.locator('button:has-text("Resend"), a:has-text("Resend")')).toBeVisible({ timeout: 10000 });
@@ -99,7 +99,7 @@ test.describe('Email Verification', () => {
       await expect(page.locator('text=/Invalid.*verification/i, text=/Invalid.*link/i')).toBeVisible({ timeout: 5000 });
 
       // And I should see a link to the login page
-      await expect(page.locator('a:has-text("Sign In"), a:has-text("Login"), button:has-text("Back to Sign In")')).toBeVisible();
+      await expect(page.locator('a:has-text("Log In"), a:has-text("Login"), button:has-text("Back to Log In")')).toBeVisible();
 
       // And I should see an option to request a new verification email
       await expect(page.locator('text=/Request.*verification/i, text=/Resend/i')).toBeVisible();
@@ -148,7 +148,7 @@ test.describe('Email Verification', () => {
       // Try to login with unverified account
       await page.fill('input[type="email"]', testEmail);
       await page.fill('input[type="password"]', testPassword);
-      await page.click('button:has-text("Sign In")');
+      await page.click('button:has-text("Log In")');
 
       // Should see resend option
       const resendButton = page.locator('button:has-text("Resend"), a:has-text("Resend")');
@@ -170,7 +170,7 @@ test.describe('Email Verification', () => {
       // Try to login with unverified account
       await page.fill('input[type="email"]', testEmail);
       await page.fill('input[type="password"]', testPassword);
-      await page.click('button:has-text("Sign In")');
+      await page.click('button:has-text("Log In")');
 
       // Click resend
       const resendButton = page.locator('button:has-text("Resend")').first();
@@ -239,7 +239,7 @@ test.describe('Email Verification', () => {
       await page.fill('input[type="password"]', verifiedPassword);
 
       // And I click sign in
-      await page.click('button:has-text("Sign In")');
+      await page.click('button:has-text("Log In")');
 
       // Then I should be logged in successfully
       await expect(page.locator('header')).toBeVisible({ timeout: 10000 });
@@ -258,8 +258,8 @@ test.describe('Email Verification', () => {
       // Given I'm on a verification error page (invalid token)
       await page.goto('/?type=signup&token=invalid_token');
 
-      // When I see the error and click "Back to Sign In"
-      const backButton = page.locator('a:has-text("Sign In"), button:has-text("Back to Sign In"), a:has-text("Login")');
+      // When I see the error and click "Back to Log In"
+      const backButton = page.locator('a:has-text("Log In"), button:has-text("Back to Log In"), a:has-text("Login")');
       await expect(backButton).toBeVisible({ timeout: 5000 });
       await backButton.first().click();
 

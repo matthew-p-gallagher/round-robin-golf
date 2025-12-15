@@ -9,7 +9,7 @@ Feature: Network and Connection Errors
   Scenario: Login with no internet connection
     Given I have no internet connection
     When I enter my email and password
-    And I click the "Sign In" button
+    And I click the "Log In" button
     Then I should see a loading indicator
     And the request should timeout or fail
     And I should see an error message "Unable to connect. Check your internet connection."

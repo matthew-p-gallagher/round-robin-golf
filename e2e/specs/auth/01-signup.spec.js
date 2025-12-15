@@ -167,8 +167,8 @@ test.describe('First-Time Signup', () => {
     await expect(page.locator('.auth-success')).toBeVisible({ timeout: 10000 });
     await expect(page.locator('.auth-success')).toContainText('Account created! Please check your email to verify your account.');
 
-    // And I should see a "Back to Sign In" button
-    await expect(page.locator('button:has-text("Back to Sign In")')).toBeVisible();
+    // And I should see a "Back to Log In" button
+    await expect(page.locator('button:has-text("Back to Log In")')).toBeVisible();
 
     // Cleanup: Delete the test user
     try {
