@@ -1909,7 +1909,14 @@
 .bottom-sheet-handle-container {
   display: flex;
   justify-content: center;
-  padding: var(--spacing-sm) 0;
+  padding: var(--spacing-md) 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.bottom-sheet-handle-container:active {
+  cursor: grabbing;
 }
 
 .bottom-sheet-handle {
@@ -1917,6 +1924,21 @@
   height: 4px;
   background-color: var(--color-border);
   border-radius: 2px;
+  transition: background-color var(--transition-fast), width var(--transition-fast);
+}
+
+.bottom-sheet-handle-container:hover .bottom-sheet-handle {
+  background-color: var(--color-text-light);
+  width: 48px;
+}
+
+.bottom-sheet-dragging {
+  user-select: none;
+}
+
+.bottom-sheet-dragging .bottom-sheet-handle {
+  background-color: var(--color-primary);
+  width: 48px;
 }
 
 .bottom-sheet-header {
